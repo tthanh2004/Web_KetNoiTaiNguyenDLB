@@ -14,18 +14,21 @@ return new class extends Migration
         Schema::create('data_requests', function (Blueprint $table) {
             $table->id();
             
-            // Thông tin người gửi (Khách vãng lai)
-            $table->string('fullname');      // Họ tên
-            $table->string('email');         // Email liên hệ
-            $table->string('organization')->nullable(); // Cơ quan
-            $table->string('phone')->nullable(); // Số điện thoại
+            // Thông tin người dân (Khách)
+            $table->string('fullname');
+            $table->string('email');
+            $table->string('organization')->nullable();
+            $table->string('phone')->nullable();
             
             // Nội dung yêu cầu
-            $table->text('content'); 
+            $table->text('content');
             
-            // Trạng thái xử lý (Để Admin quản lý)
-            // 'new': Mới gửi, 'contacted': Đã liên hệ, 'done': Đã xong
-            $table->string('status')->default('new'); 
+            // Trạng thái & Phản hồi
+            $table->string('status')->default('new'); // new, processed
+            
+            // Admin nào đã xử lý yêu cầu này? (MỚI THÊM - Tùy chọn nâng cao)
+            // Để biết Admin A hay Admin B đã trả lời mail cho khách
+            $table->foreignId('processed_by_user_id')->nullable()->constrained('users')->onDelete('set null');
             
             $table->timestamps();
         });

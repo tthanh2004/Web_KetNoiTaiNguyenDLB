@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('title'); // Tên tài liệu
-            $table->string('author_org')->nullable(); // Tác giả/Cơ quan soạn thảo
-            $table->string('file_url'); // Đường dẫn file (quan trọng)
-            $table->string('type')->nullable(); // Loại (Báo cáo/Bản đồ)
+            $table->string('author_org')->nullable(); // Tác giả
+            $table->string('file_url'); // Link file
+            $table->string('type')->nullable(); // Loại file
             
-            // Liên kết: Tài liệu này của Dự án nào?
-            // onDelete('cascade'): Xóa dự án thì tài liệu tự mất theo
+            // --- CÁC KHÓA NGOẠI ---
+            
+            // 1. Admin nào upload tài liệu này? (MỚI THÊM)
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            
+            // 2. Thuộc dự án nào? (Quan trọng)
+            // Nếu xóa dự án, tài liệu đi theo luôn (Cascade)
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             
             $table->timestamps();

@@ -13,15 +13,21 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('code_number')->nullable(); // Số hiệu (Đề án 1864)
-            $table->string('name'); // Tên dự án đầy đủ
+            $table->string('code_number')->nullable(); // Số hiệu 1864
+            $table->string('name'); // Tên dự án
             $table->text('content')->nullable(); // Nội dung tóm tắt
             $table->date('start_date')->nullable(); // Ngày bắt đầu
             
-            // Liên kết 1: Thuộc nhóm nào (Đề án 47)?
+            // --- CÁC KHÓA NGOẠI ---
+            
+            // 1. Admin nào tạo dự án này? (MỚI THÊM)
+            // Nếu Admin bị xóa, cột này sẽ về NULL (Set null) để giữ lại dự án
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            
+            // 2. Thuộc nhóm dự án nào?
             $table->foreignId('project_group_id')->constrained('project_groups');
             
-            // Liên kết 2: Đơn vị nào chủ trì?
+            // 3. Đơn vị nào thực hiện?
             $table->foreignId('implementing_unit_id')->constrained('implementing_units');
             
             $table->timestamps();
