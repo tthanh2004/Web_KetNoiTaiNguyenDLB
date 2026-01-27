@@ -10,4 +10,8 @@ class Ministry extends Model
         'name',
         'code',
     ];
+    public function implementing_units()
+    {
+        return $this->hasMany(ImplementingUnit::class);
+    }
 }

@@ -4,62 +4,51 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\FeeCategory;
 
 class FeeCategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách phí (Trang chính của phần quản lý phí)
      */
     public function index()
     {
-        //
+        // Lấy tất cả danh mục kèm theo các loại phí con (feeItems)
+        $feeCategories = FeeCategory::with('feeItems')->orderBy('id', 'asc')->get();
+        
+        return view('admin.fees.index', compact('feeCategories'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        // 1. Validate dữ liệu
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'order' => 'nullable|integer',
+        ], [
+            'name.required' => 'Vui lòng nhập tên nhóm phí.',
+        ]);
+
+        // 2. Lưu vào Database
+        FeeCategory::create([
+            'name' => $request->name,
+            'order' => $request->order ?? 0,
+        ]);
+
+        // 3. Quay lại trang cũ & thông báo
+        return back()->with('success', 'Đã thêm nhóm phí mới thành công!');
     }
 
     /**
-     * Display the specified resource.
+     * Xóa nhóm phí
      */
-    public function show(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $category = FeeCategory::findOrFail($id);
+        
+        // Xóa nhóm sẽ xóa luôn các phí con
+        $category->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'Đã xóa nhóm phí thành công!');
     }
 }

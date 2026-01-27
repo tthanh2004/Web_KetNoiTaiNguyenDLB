@@ -1,63 +1,100 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+/* --- IMPORTS: CONTROLLERS --- */
 use App\Http\Controllers\ProfileController;
+
+// Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\Admin\DataRequestController as AdminRequestController;
 use App\Http\Controllers\Admin\MinistryController;
-use App\Http\Controllers\Client\ProductController as ClientProductController;
+use App\Http\Controllers\Admin\UnitController as AdminUnitController;             // [MỚI] Thêm cái này
+use App\Http\Controllers\Admin\FeeCategoryController as AdminFeeCategoryController; // [MỚI] Thêm cái này
+use App\Http\Controllers\Admin\FeeItemController as AdminFeeItemController;         // [MỚI] Thêm cái này
+
+// Client Controllers
 use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\ProjectController as ClientProjectController;
+use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\DocumentController as ClientDocumentController;
 use App\Http\Controllers\Client\ServiceController as ClientServiceController;
 use App\Http\Controllers\Client\StatisticController as ClientStatisticController;
-use App\Http\Controllers\Client\HelpController as ClientHelpController;
-use App\Http\Controllers\Client\ProjectController as ClientProjectController;
+// use App\Http\Controllers\Client\HelpController as ClientHelpController; // Bỏ comment nếu dùng
 
-/* --- KHÁCH (PUBLIC) --- */
+/* ==========================================================================
+   KHÁCH (PUBLIC ROUTES)
+   ========================================================================== */
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// 2. Tra cứu
-// Trang danh sách dự án (bạn có thể tái sử dụng trang home hoặc tạo trang riêng)
+// 1. Tra cứu Dự án & Sản phẩm
 Route::get('/du-an', [ClientProjectController::class, 'index'])->name('client.projects.index');
 Route::get('/du-an/{id}', [ClientProjectController::class, 'show'])->name('client.project.detail');
 Route::get('/tra-cuu/san-pham', [ClientProductController::class, 'index'])->name('client.products.index');
 
-// 3. Tài liệu số 
+// 2. Tài liệu số
 Route::get('/tai-lieu-so', [ClientDocumentController::class, 'index'])->name('client.documents.index');
 
-// 4. Dịch vụ
+// 3. Dịch vụ
 Route::get('/dich-vu/bieu-phi', [ClientServiceController::class, 'fees'])->name('client.services.fees');
 Route::view('/dich-vu/khac', 'client.services.other')->name('client.services.other');
 
-// 5. Yêu cầu dữ liệu (Đã có Controller)
+// 4. Yêu cầu dữ liệu
 Route::get('/gui-yeu-cau', [HomeController::class, 'createRequest'])->name('client.request.create');
 Route::post('/gui-yeu-cau', [HomeController::class, 'storeRequest'])->name('client.request.store');
 
-// 6. Thống kê (Tạo view tương ứng)
+// 5. Thống kê
 Route::view('/thong-ke/du-an', 'client.statistics.projects')->name('client.statistics.projects');
 Route::view('/thong-ke/de-an-47', 'client.statistics.scheme47')->name('client.statistics.scheme47');
 Route::get('/thong-ke/don-vi', [ClientStatisticController::class, 'byUnit'])->name('client.statistics.units');
 Route::view('/thong-ke/bo-nganh', 'client.statistics.ministries')->name('client.statistics.ministries');
 Route::view('/thong-ke/tai-lieu', 'client.statistics.documents')->name('client.statistics.documents');
-// 7. Trợ giúp & Footer Links
-Route::view('/gioi-thieu', 'client.help.about')->name('client.help.about'); // Giới thiệu chung
-Route::view('/co-cau-to-chuc', 'client.help.org')->name('client.help.org'); // Cơ cấu tổ chức
-Route::view('/huong-dan', 'client.help.guide')->name('client.help.guide'); // Hướng dẫn
-Route::view('/lien-he', 'client.help.contact')->name('client.help.contact'); // Liên hệ
 
-/* --- ADMIN (PRIVATE) --- */
+// 6. Trang tĩnh (Giới thiệu, Liên hệ...)
+Route::view('/gioi-thieu', 'client.help.about')->name('client.help.about');
+Route::view('/co-cau-to-chuc', 'client.help.org')->name('client.help.org');
+Route::view('/huong-dan', 'client.help.guide')->name('client.help.guide');
+Route::view('/lien-he', 'client.help.contact')->name('client.help.contact');
+
+/* ==========================================================================
+   QUẢN TRỊ (ADMIN ROUTES)
+   ========================================================================== */
+
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Quản lý Dự án
     Route::resource('projects', AdminProjectController::class);
-    Route::resource('documents', AdminDocumentController::class);
-    Route::resource('data_requests', AdminRequestController::class)->only(['index', 'update', 'destroy']);
-    Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
+
+    // Quản lý Đơn vị thực hiện
+    Route::resource('units', AdminUnitController::class);
+
+    // Quản lý Bộ ngành
     Route::resource('ministries', MinistryController::class);
+
+    // Quản lý Tài liệu số
+    Route::resource('documents', AdminDocumentController::class);
+
+    // Quản lý Biểu phí (Nhóm phí & Loại phí chi tiết)
+    Route::resource('fee-categories', AdminFeeCategoryController::class);
+    Route::resource('fee-items', AdminFeeItemController::class);
+
+    // Quản lý Yêu cầu dữ liệu (Chỉ Xem, Cập nhật, Xóa - Không có Tạo mới)
+    // Lưu ý: Đặt tên resource là 'data_requests' để khớp với Sidebar của bạn
+    Route::resource('requests', AdminRequestController::class)->only(['index', 'update', 'destroy']);    
+    // Route riêng để update trạng thái nhanh (nếu cần dùng Ajax/Patch)
+    Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
 });
 
-/* --- AUTH --- */
+/* ==========================================================================
+   AUTHENTICATION & PROFILE
+   ========================================================================== */
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -4,62 +4,35 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\FeeItem;
 
 class FeeItemController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Lưu loại phí mới (Xử lý Form trong Modal)
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'fee_category_id' => 'required|exists:fee_categories,id',
+            'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:50',
+            'price' => 'required|numeric',
+        ]);
+
+        FeeItem::create($request->all());
+
+        return back()->with('success', 'Đã thêm phí mới!');
     }
 
     /**
-     * Display the specified resource.
+     * Xóa loại phí
      */
-    public function show(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $item = FeeItem::findOrFail($id);
+        $item->delete();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'Đã xóa phí!');
     }
 }
