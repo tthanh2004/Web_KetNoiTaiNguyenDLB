@@ -10,6 +10,11 @@ class FeeItem extends Model
         'name',
         'unit',
         'price',
-        'fee_category_id', // Khóa ngoại
+        'fee_category_id',
     ];
+
+    public function feeCategory()
+    {
+        return $this->belongsTo(FeeCategory::class);
+    }
 }

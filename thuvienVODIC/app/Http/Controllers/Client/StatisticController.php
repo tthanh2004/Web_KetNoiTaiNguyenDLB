@@ -15,10 +15,13 @@ class StatisticController extends Controller
     }
 
     public function byUnit() {
-        // Top 10 đơn vị thực hiện nhiều dự án nhất
+        // Lấy danh sách đơn vị kèm số lượng dự án, sắp xếp giảm dần
+        // withCount('projects') sẽ tạo ra thuộc tính 'projects_count'
         $units = ImplementingUnit::withCount('projects')
             ->orderBy('projects_count', 'desc')
-            ->take(10)->get();
+            ->take(20) // Lấy top 20 đơn vị
+            ->get();
+
         return view('client.statistics.units', compact('units'));
     }
 }

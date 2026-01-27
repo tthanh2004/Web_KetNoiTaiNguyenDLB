@@ -8,9 +8,15 @@ class ImplementingUnit extends Model
 {
     protected $fillable = [
         'name',
-        'ministry_id', // Khóa ngoại
+        'ministry_id',
     ];
-    public function ministry() {
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+    
+    public function ministry()
+    {
         return $this->belongsTo(Ministry::class);
     }
 }

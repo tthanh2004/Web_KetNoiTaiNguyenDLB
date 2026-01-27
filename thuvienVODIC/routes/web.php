@@ -13,21 +13,22 @@ use App\Http\Controllers\Client\DocumentController as ClientDocumentController;
 use App\Http\Controllers\Client\ServiceController as ClientServiceController;
 use App\Http\Controllers\Client\StatisticController as ClientStatisticController;
 use App\Http\Controllers\Client\HelpController as ClientHelpController;
+use App\Http\Controllers\Client\ProjectController as ClientProjectController;
 
 /* --- KHÁCH (PUBLIC) --- */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // 2. Tra cứu
 // Trang danh sách dự án (bạn có thể tái sử dụng trang home hoặc tạo trang riêng)
-Route::get('/du-an', [HomeController::class, 'index'])->name('client.projects.index'); 
-Route::get('/du-an/{id}', [HomeController::class, 'showProject'])->name('client.project.detail');
+Route::get('/du-an', [ClientProjectController::class, 'index'])->name('client.projects.index');
+Route::get('/du-an/{id}', [ClientProjectController::class, 'show'])->name('client.project.detail');
 Route::get('/tra-cuu/san-pham', [ClientProductController::class, 'index'])->name('client.products.index');
 
 // 3. Tài liệu số 
-Route::view('/tai-lieu-so', 'client.documents.index')->name('client.documents.index');
+Route::get('/tai-lieu-so', [ClientDocumentController::class, 'index'])->name('client.documents.index');
 
 // 4. Dịch vụ
-Route::view('/dich-vu/bieu-phi', 'client.services.fees')->name('client.services.fees');
+Route::get('/dich-vu/bieu-phi', [ClientServiceController::class, 'fees'])->name('client.services.fees');
 Route::view('/dich-vu/khac', 'client.services.other')->name('client.services.other');
 
 // 5. Yêu cầu dữ liệu (Đã có Controller)
@@ -37,7 +38,7 @@ Route::post('/gui-yeu-cau', [HomeController::class, 'storeRequest'])->name('clie
 // 6. Thống kê (Tạo view tương ứng)
 Route::view('/thong-ke/du-an', 'client.statistics.projects')->name('client.statistics.projects');
 Route::view('/thong-ke/de-an-47', 'client.statistics.scheme47')->name('client.statistics.scheme47');
-Route::view('/thong-ke/don-vi', 'client.statistics.units')->name('client.statistics.units');
+Route::get('/thong-ke/don-vi', [ClientStatisticController::class, 'byUnit'])->name('client.statistics.units');
 Route::view('/thong-ke/bo-nganh', 'client.statistics.ministries')->name('client.statistics.ministries');
 Route::view('/thong-ke/tai-lieu', 'client.statistics.documents')->name('client.statistics.documents');
 // 7. Trợ giúp & Footer Links

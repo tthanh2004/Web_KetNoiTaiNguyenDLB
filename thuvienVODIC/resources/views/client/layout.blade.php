@@ -90,7 +90,7 @@
                         <div class="dropdown-menu absolute right-0 top-full pt-3 w-64">
                             <div class="bg-white border border-blue-100 shadow-xl rounded-xl overflow-hidden">
                                 <a href="{{ route('client.statistics.projects') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-chart-pie mr-2 text-blue-400"></i> Theo Dự án / Đề án
+                                    <i class="fa-solid fa-chart-pie mr-2 text-blue-400"></i> Theo Dự án
                                 </a>
                                 <a href="{{ route('client.statistics.scheme47') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
                                     <i class="fa-solid fa-file-contract mr-2 text-blue-400"></i> Theo Đề án 47

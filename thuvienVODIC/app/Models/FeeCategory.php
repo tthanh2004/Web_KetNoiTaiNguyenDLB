@@ -10,4 +10,8 @@ class FeeCategory extends Model
         'name',
         'order',
     ];
+    public function feeItems()
+    {
+        return $this->hasMany(FeeItem::class); 
+    }
 }
