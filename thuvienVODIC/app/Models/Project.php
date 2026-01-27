@@ -11,9 +11,18 @@ class Project extends Model
         'name', 
         'content', 
         'start_date', 
-        'user_id', // Admin tạo
-        'project_group_id', 
+        'user_id',
+        'status', 
+        'progress', 
+        'parent_id',
+        'completed_at',
+        'project_group_id',
         'implementing_unit_id'
+    ];
+
+    protected $casts = [
+        'completed_at' => 'date',
+        'start_date' => 'date',
     ];
 
     // Liên kết đến Admin tạo

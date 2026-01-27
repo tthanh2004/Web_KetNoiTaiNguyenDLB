@@ -41,7 +41,7 @@
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 text-center text-sm">
                     @if($req->status == 'new')
-                    <form action="{{ route('admin.data_requests.update_status', $req->id) }}" method="POST" class="inline-block">
+                    <form action="{{ route('admin.requests.update', $req->id) }}" method="POST" class="inline-block">
                         @csrf
                         @method('PATCH')
                         <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-xs" title="Đánh dấu đã xử lý">
@@ -50,7 +50,7 @@
                     </form>
                     @endif
                     
-                    <form action="{{ route('admin.data_requests.destroy', $req->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Xóa yêu cầu này?');">
+                    <form action="{{ route('admin.requests.destroy', $req->id) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Xóa yêu cầu này?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-500 hover:text-red-700">

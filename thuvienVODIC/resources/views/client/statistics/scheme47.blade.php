@@ -4,143 +4,136 @@
 <div class="bg-slate-50 min-h-screen py-10">
     <div class="container mx-auto px-4 md:px-6 max-w-6xl">
         
-        <div class="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden mb-10">
-            <div class="bg-blue-900 p-8 md:p-12 text-center text-white relative">
-                <i class="fa-solid fa-anchor absolute top-4 left-4 text-blue-800 text-9xl opacity-20 transform -rotate-12"></i>
-                <i class="fa-solid fa-map absolute bottom-4 right-4 text-blue-800 text-9xl opacity-20"></i>
-                
+        <div class="bg-gradient-to-r from-blue-900 to-blue-800 rounded-2xl shadow-lg text-white p-8 md:p-12 mb-10 relative overflow-hidden">
+            <i class="fa-solid fa-anchor absolute bottom-0 right-0 text-9xl opacity-10 transform translate-x-10 translate-y-10"></i>
+            <i class="fa-solid fa-map absolute bottom-4 right-4 text-blue-800 text-9xl opacity-20"></i>
+            
+            <div class="relative z-10">
                 <span class="inline-block py-1 px-3 rounded bg-yellow-500 text-blue-900 text-xs font-bold uppercase tracking-wider mb-4">
                     Quyết định số 47/2006/QĐ-TTg
                 </span>
                 <h1 class="text-3xl md:text-5xl font-serif font-bold mb-4 leading-tight">
                     Đề án 47
                 </h1>
-                <p class="text-blue-100 text-lg max-w-3xl mx-auto font-light">
-                    "Đề án tổng thể về điều tra cơ bản và quản lý tài nguyên - môi trường biển đến năm 2010, tầm nhìn đến năm 2020".
+                <p class="text-blue-100 text-lg max-w-3xl mb-8">
+                    "Đề án tổng thể về điều tra cơ bản và quản lý tài nguyên – môi trường biển đến năm 2010, tầm nhìn đến năm 2020".
                 </p>
-            </div>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100 border-b border-slate-100">
-                <div class="p-6 text-center">
-                    <div class="text-3xl font-bold text-blue-900 mb-1">158</div>
-                    <div class="text-xs text-slate-500 uppercase font-semibold">Tổng dự án</div>
-                </div>
-                <div class="p-6 text-center">
-                    <div class="text-3xl font-bold text-green-600 mb-1">92%</div>
-                    <div class="text-xs text-slate-500 uppercase font-semibold">Tỷ lệ hoàn thành</div>
-                </div>
-                <div class="p-6 text-center">
-                    <div class="text-3xl font-bold text-blue-900 mb-1">63</div>
-                    <div class="text-xs text-slate-500 uppercase font-semibold">Tỉnh/Thành ven biển</div>
-                </div>
-                <div class="p-6 text-center">
-                    <div class="text-3xl font-bold text-yellow-500 mb-1">20+</div>
-                    <div class="text-xs text-slate-500 uppercase font-semibold">Năm thực hiện</div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-blue-700 border-t border-blue-700 pt-6">
+                    <div class="px-4 text-center md:text-left">
+                        <div class="text-3xl font-bold">{{ $total47 ?? 0 }}</div>
+                        <div class="text-xs text-blue-300 uppercase">Dự án thành phần</div>
+                    </div>
+                    <div class="px-4 text-center md:text-left">
+                        <div class="text-3xl font-bold">{{ $percentCompleted ?? 0 }}%</div>
+                        <div class="text-xs text-blue-300 uppercase">Tỷ lệ hoàn thành</div>
+                    </div>
+                    <div class="px-4 text-center md:text-left">
+                        <div class="text-3xl font-bold">28</div> 
+                        <div class="text-xs text-blue-300 uppercase">Tỉnh/Thành ven biển</div>
+                    </div>
+                    <div class="px-4 text-center md:text-left">
+                        <div class="text-3xl font-bold">20+</div>
+                        <div class="text-xs text-blue-300 uppercase">Năm triển khai</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="lg:col-span-2 space-y-6">
-                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-3 mb-4">
-                    <span class="w-8 h-8 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-sm">
-                        <i class="fa-solid fa-list-check"></i>
-                    </span>
-                    Các hạng mục & Dự án thành phần
-                </h2>
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 border-l-4 border-blue-600 pl-4">Các dự án thành phần trọng điểm</h2>
+                    
+                    @if(isset($components) && $components->count() > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach($components as $comp)
+                            
+                            {{-- LOGIC XỬ LÝ TRẠNG THÁI & MÀU SẮC --}}
+                            @php
+                                $statusConfig = [
+                                    'new'       => ['label' => 'Mới khởi tạo',  'class' => 'bg-gray-100 text-gray-600'],
+                                    'ongoing'   => ['label' => 'Đang thực hiện','class' => 'bg-blue-100 text-blue-700'],
+                                    'paused'    => ['label' => 'Tạm dừng',      'class' => 'bg-orange-100 text-orange-700'],
+                                    'completed' => ['label' => 'Đã hoàn thành', 'class' => 'bg-green-100 text-green-700'],
+                                ];
+                                $currentStatus = $statusConfig[$comp->status] ?? $statusConfig['new'];
+                            @endphp
 
-                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500 group-hover:w-2 transition-all"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-none pt-1">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                                <i class="fa-solid fa-map-location-dot"></i>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-all group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold {{ $currentStatus['class'] }}">
+                                        {{ $currentStatus['label'] }}
+                                    </span>
+                                </div>
+                                
+                                <h3 class="font-bold text-slate-800 text-lg mb-2 line-clamp-2 h-14" title="{{ $comp->name }}">
+                                    {{ $comp->name }}
+                                </h3>
+                                
+                                <div class="flex items-center gap-3 text-sm mt-2">
+                                    <div class="flex-1 bg-slate-100 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-1000" style="width: {{ $comp->progress }}%"></div>
+                                    </div>
+                                    <span class="font-bold text-blue-600">{{ $comp->progress }}%</span>
+                                </div>
                             </div>
+                            @endforeach
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Đo vẽ bản đồ địa hình đáy biển tỷ lệ 1:50.000</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed mb-3">
-                                <span class="font-semibold">Khu vực:</span> Vịnh Bắc Bộ phục vụ nhiệm vụ quản lý biển của các Bộ, ngành, địa phương liên quan.
-                            </p>
-                            <div class="flex flex-wrap gap-2 text-xs">
-                                <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200">9 mảnh bản đồ</span>
-                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded border border-green-200">Hoàn thành 2023</span>
-                            </div>
+                    @else
+                        <div class="text-center py-8 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+                            <p class="text-slate-500">Chưa có dữ liệu dự án trọng điểm.</p>
                         </div>
-                    </div>
+                    @endif
                 </div>
 
-                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500 group-hover:w-2 transition-all"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-none pt-1">
-                            <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                                <i class="fa-solid fa-satellite"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Giám sát vùng Biển, đảo trọng điểm bằng Viễn thám</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed mb-3">
-                                Sử dụng công nghệ viễn thám phục vụ phát triển kinh tế xã hội và bảo đảm an ninh quốc phòng.
-                            </p>
-                            <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold border border-purple-200">Công nghệ cao</span>
-                        </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-700">Danh sách dự án thuộc Đề án 47</h3>
+                        <span class="text-xs text-slate-500">{{ isset($listProjects) ? $listProjects->count() : 0 }} kết quả</span>
                     </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-1 h-full bg-cyan-500 group-hover:w-2 transition-all"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-none pt-1">
-                            <div class="w-10 h-10 rounded-full bg-cyan-50 flex items-center justify-center text-cyan-600">
-                                <i class="fa-solid fa-database"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Dự án thành phần 8: Cập nhật dữ liệu & HTTT</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed mb-3">
-                                Xây dựng hệ thống thông tin tài nguyên – môi trường một số hải đảo, cụm đảo lớn quan trọng phục vụ quy hoạch phát triển kinh tế biển và bảo vệ chủ quyền.
-                            </p>
-                            <div class="flex items-center gap-2 text-xs text-slate-500">
-                                <i class="fa-solid fa-link"></i> Liên kết dữ liệu quốc gia
-                            </div>
-                        </div>
+                    
+                    @if(isset($listProjects) && $listProjects->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-slate-500 bg-white border-b text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-3">Mã số</th>
+                                    <th class="px-6 py-3">Tên dự án</th>
+                                    <th class="px-6 py-3">Đơn vị thực hiện</th>
+                                    <th class="px-6 py-3 text-center">Năm BĐ</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @foreach($listProjects as $p)
+                                <tr class="hover:bg-blue-50 transition-colors">
+                                    <td class="px-6 py-4 font-mono text-xs text-slate-500">
+                                        {{ $p->code_number ?? '---' }}
+                                    </td>
+                                    <td class="px-6 py-4 font-medium text-slate-800">
+                                        <span class="hover:text-blue-600 block line-clamp-2" title="{{ $p->name }}">{{ $p->name }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-slate-600">
+                                        {{ $p->implementing_unit->name ?? '---' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-slate-500">
+                                        {{ $p->start_date ? \Carbon\Carbon::parse($p->start_date)->year : '' }}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500 group-hover:w-2 transition-all"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-none pt-1">
-                            <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
+                    @else
+                        <div class="p-8 text-center">
+                            <p class="text-slate-500 italic">Chưa có dữ liệu dự án chi tiết trong hệ thống.</p>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Thành phần 9: Điều phối & Báo cáo tổng kết</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed">
-                                Tổng hợp kết quả các dự án thành phần, đề xuất giải pháp sử dụng hợp lý tài nguyên và bảo vệ môi trường nhằm phát triển bền vững.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                 <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500 group-hover:w-2 transition-all"></div>
-                    <div class="flex gap-4">
-                        <div class="flex-none pt-1">
-                            <div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
-                                <i class="fa-solid fa-flask"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800 mb-2">Nghiên cứu khoáng định (Hydrate)</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed">
-                                Nghiên cứu, điều tra, đánh giá khoanh định các cấu trúc địa chất có tiềm năng và triển vọng khí hydrate ở các vùng biển Việt Nam.
-                            </p>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
             </div>
@@ -167,24 +160,24 @@
 
                 <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
-                        Tài liệu đính kèm
-                        <i class="fa-solid fa-paperclip text-slate-400"></i>
+                        Văn bản liên quan
+                        <i class="fa-solid fa-file-lines text-slate-400"></i>
                     </h3>
                     <div class="space-y-3">
-                        <a href="#" class="block p-3 rounded bg-blue-50 hover:bg-blue-100 transition-colors">
+                        <a href="#" class="block p-3 rounded bg-blue-50 hover:bg-blue-100 transition-colors group">
                             <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-file-pdf text-red-500 text-xl"></i>
+                                <i class="fa-solid fa-file-pdf text-red-500 text-xl group-hover:scale-110 transition-transform"></i>
                                 <div>
-                                    <div class="text-sm font-bold text-blue-900">Quyết định 47/2006/QĐ-TTg</div>
+                                    <div class="text-sm font-bold text-blue-900 group-hover:underline">Quyết định 47/2006/QĐ-TTg</div>
                                     <div class="text-[10px] text-slate-500">PDF • 2.4 MB</div>
                                 </div>
                             </div>
                         </a>
-                        <a href="#" class="block p-3 rounded bg-blue-50 hover:bg-blue-100 transition-colors">
+                        <a href="#" class="block p-3 rounded bg-blue-50 hover:bg-blue-100 transition-colors group">
                             <div class="flex items-center gap-3">
-                                <i class="fa-solid fa-file-word text-blue-500 text-xl"></i>
+                                <i class="fa-solid fa-file-word text-blue-500 text-xl group-hover:scale-110 transition-transform"></i>
                                 <div>
-                                    <div class="text-sm font-bold text-blue-900">Báo cáo tổng kết GĐ 1</div>
+                                    <div class="text-sm font-bold text-blue-900 group-hover:underline">Báo cáo tổng kết GĐ 2006-2010</div>
                                     <div class="text-[10px] text-slate-500">DOCX • 5.1 MB</div>
                                 </div>
                             </div>

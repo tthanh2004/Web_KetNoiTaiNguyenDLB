@@ -31,12 +31,14 @@ class MinistryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:ministries,name',
-        ], [
-            'name.required' => 'Tên bộ ngành không được để trống.',
-            'name.unique' => 'Tên bộ ngành này đã tồn tại.',
+        'code' => 'required|string|max:20|unique:ministries,code', // Validate Mã
+        'name' => 'required|string|max:255|unique:ministries,name',
+        ], 
+        [
+            'code.required' => 'Mã bộ ngành không được để trống.',
+            'code.unique' => 'Mã này đã tồn tại.',
         ]);
-
+        
         Ministry::create($request->all());
 
         return redirect()->route('admin.ministries.index')
@@ -58,6 +60,7 @@ class MinistryController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'code' => 'required|string|max:20|unique:ministries,code,'.$id,
             'name' => 'required|string|max:255|unique:ministries,name,'.$id,
         ]);
 

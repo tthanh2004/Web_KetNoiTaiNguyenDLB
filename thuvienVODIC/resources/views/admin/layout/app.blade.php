@@ -39,11 +39,16 @@
                 </a>
 
                 <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mt-6 mb-2">Quản lý Dữ liệu</p>
+                <a href="{{ route('admin.project-groups.index') }}" 
+                    class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.project-groups.*') ? 'bg-blue-700 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-layer-group w-6"></i> 
+                    <span>Nhóm Dự án</span>
+                </a>
                 
                 <a href="{{ route('admin.projects.index') }}" 
                    class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.projects.*') ? 'bg-blue-700 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-folder-tree w-6"></i> 
-                    <span>Dự án / Đề án</span>
+                    <span>Dự án</span>
                 </a>
 
                 <a href="{{ route('admin.ministries.index') }}" 

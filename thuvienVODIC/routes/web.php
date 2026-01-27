@@ -11,9 +11,10 @@ use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\Admin\DataRequestController as AdminRequestController;
 use App\Http\Controllers\Admin\MinistryController;
-use App\Http\Controllers\Admin\UnitController as AdminUnitController;             // [MỚI] Thêm cái này
-use App\Http\Controllers\Admin\FeeCategoryController as AdminFeeCategoryController; // [MỚI] Thêm cái này
-use App\Http\Controllers\Admin\FeeItemController as AdminFeeItemController;         // [MỚI] Thêm cái này
+use App\Http\Controllers\Admin\UnitController as AdminUnitController;             
+use App\Http\Controllers\Admin\FeeCategoryController as AdminFeeCategoryController; 
+use App\Http\Controllers\Admin\FeeItemController as AdminFeeItemController;    
+use App\Http\Controllers\Admin\ProjectGroupController as AdminProjectGroupController;  
 
 // Client Controllers
 use App\Http\Controllers\Client\HomeController;
@@ -22,7 +23,8 @@ use App\Http\Controllers\Client\ProductController as ClientProductController;
 use App\Http\Controllers\Client\DocumentController as ClientDocumentController;
 use App\Http\Controllers\Client\ServiceController as ClientServiceController;
 use App\Http\Controllers\Client\StatisticController as ClientStatisticController;
-// use App\Http\Controllers\Client\HelpController as ClientHelpController; // Bỏ comment nếu dùng
+use App\Http\Controllers\Client\StatisticController as StatisticController;
+use App\Http\Controllers\Client\HelpController as ClientHelpController;
 
 /* ==========================================================================
    KHÁCH (PUBLIC ROUTES)
@@ -47,11 +49,11 @@ Route::get('/gui-yeu-cau', [HomeController::class, 'createRequest'])->name('clie
 Route::post('/gui-yeu-cau', [HomeController::class, 'storeRequest'])->name('client.request.store');
 
 // 5. Thống kê
-Route::view('/thong-ke/du-an', 'client.statistics.projects')->name('client.statistics.projects');
-Route::view('/thong-ke/de-an-47', 'client.statistics.scheme47')->name('client.statistics.scheme47');
-Route::get('/thong-ke/don-vi', [ClientStatisticController::class, 'byUnit'])->name('client.statistics.units');
-Route::view('/thong-ke/bo-nganh', 'client.statistics.ministries')->name('client.statistics.ministries');
-Route::view('/thong-ke/tai-lieu', 'client.statistics.documents')->name('client.statistics.documents');
+Route::get('/thong-ke/du-an', [StatisticController::class, 'projects'])->name('client.statistics.projects');
+Route::get('/thong-ke/de-an-47', [StatisticController::class, 'scheme47'])->name('client.statistics.scheme47');
+Route::get('/thong-ke/don-vi', [StatisticController::class, 'byUnit'])->name('client.statistics.units');
+Route::get('/thong-ke/bo-nganh', [StatisticController::class, 'ministries'])->name('client.statistics.ministries');
+Route::get('/thong-ke/tai-lieu', [StatisticController::class, 'documents'])->name('client.statistics.documents');
 
 // 6. Trang tĩnh (Giới thiệu, Liên hệ...)
 Route::view('/gioi-thieu', 'client.help.about')->name('client.help.about');
@@ -89,6 +91,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('requests', AdminRequestController::class)->only(['index', 'update', 'destroy']);    
     // Route riêng để update trạng thái nhanh (nếu cần dùng Ajax/Patch)
     Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
+    // Quản lý Nhóm dự án
+    Route::resource('project-groups', AdminProjectGroupController::class);
 });
 
 /* ==========================================================================

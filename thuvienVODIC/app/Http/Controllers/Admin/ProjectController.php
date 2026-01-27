@@ -4,84 +4,91 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
-use App\Models\ProjectGroup;
-use App\Models\ImplementingUnit;
+use App\Models\ProjectGroup;      // <-- Nhớ dòng này
+use App\Models\ImplementingUnit;  // <-- Nhớ dòng này
 
 class ProjectController extends Controller
 {
-    // 1. Danh sách
     public function index()
     {
         $projects = Project::with(['project_group', 'implementing_unit', 'creator'])
-                            ->orderBy('id', 'desc')
-                            ->paginate(10);
+                           ->orderBy('id', 'desc')
+                           ->paginate(10);
         return view('admin.projects.index', compact('projects'));
     }
 
-    // 2. Form thêm mới
+    // --- HÀM BẠN ĐANG THIẾU ---
     public function create()
     {
+        // Lấy dữ liệu cho dropdown chọn Nhóm và Đơn vị
         $groups = ProjectGroup::all();
-        $units  = ImplementingUnit::all();
+        $units = ImplementingUnit::all();
+        
         return view('admin.projects.create', compact('groups', 'units'));
     }
+    // ---------------------------
 
-    // 3. Lưu dữ liệu (Store)
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'code_number' => 'nullable|max:50',
-            'project_group_id' => 'required',
-            'implementing_unit_id' => 'required',
-            'start_date' => 'nullable|date',
-        ]);
-
-        $data = $request->all();
-        $data['user_id'] = Auth::id(); // Lưu Admin tạo
-
+        $data = $this->validateData($request);
+        // Gán người tạo là admin đang đăng nhập
+        $data['user_id'] = auth()->id(); 
+        
         Project::create($data);
-
-        return redirect()->route('admin.projects.index')
-                         ->with('success', 'Thêm dự án thành công!');
+        return redirect()->route('admin.projects.index')->with('success', 'Thêm dự án thành công');
     }
 
-    // 4. Form sửa
     public function edit($id)
     {
         $project = Project::findOrFail($id);
-        $groups = ProjectGroup::all();
-        $units  = ImplementingUnit::all();
+        
+        // Cần lấy lại danh sách nhóm/đơn vị để hiển thị trong dropdown sửa
+        $groups = ProjectGroup::all(); 
+        $units = ImplementingUnit::all();
+
         return view('admin.projects.edit', compact('project', 'groups', 'units'));
     }
 
-    // 5. Cập nhật (Update)
     public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
+        $data = $this->validateData($request);
         
-        $request->validate([
-            'name' => 'required|max:255',
-            'project_group_id' => 'required',
-            'implementing_unit_id' => 'required',
-        ]);
-
-        $project->update($request->all());
-
-        return redirect()->route('admin.projects.index')
-                         ->with('success', 'Cập nhật dự án thành công!');
+        $project->update($data);
+        return redirect()->route('admin.projects.index')->with('success', 'Cập nhật thành công');
     }
 
-    // 6. Xóa (Destroy)
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
-        // Do có onDelete('cascade') ở database, các tài liệu con sẽ tự mất
         $project->delete();
+        return redirect()->route('admin.projects.index')->with('success', 'Đã xóa dự án');
+    }
 
-        return redirect()->route('admin.projects.index')
-                         ->with('success', 'Đã xóa dự án!');
+    // Hàm validate chung
+    private function validateData($request)
+    {
+        $data = $request->validate([
+            'name' => 'required',
+            'code_number' => 'nullable',
+            'project_group_id' => 'required',
+            'implementing_unit_id' => 'required',
+            'content' => 'nullable',
+            'start_date' => 'nullable|date',
+            'status' => 'required|in:new,ongoing,completed,paused',
+            'progress' => 'required|integer|min:0|max:100',
+            'completed_at' => 'nullable|date',
+        ]);
+
+        if ($data['status'] == 'completed' && empty($data['completed_at'])) {
+            $data['completed_at'] = now();
+        }
+        
+        if ($data['status'] != 'completed') {
+            $data['completed_at'] = null;
+        }
+
+        return $data;
     }
 }

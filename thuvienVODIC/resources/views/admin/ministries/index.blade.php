@@ -13,7 +13,7 @@
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Bộ / Ngành</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Mã Bộ</th> <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Bộ / Ngành</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số đơn vị trực thuộc</th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Hành động</th>
             </tr>
@@ -22,6 +22,11 @@
             @foreach($ministries as $item)
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 text-sm text-gray-500">#{{ $item->id }}</td>
+                <td class="px-6 py-4">
+                    <span class="bg-gray-100 text-gray-800 text-xs font-mono font-bold px-2 py-1 rounded border border-gray-300">
+                        {{ $item->code ?? '---' }}
+                    </span>
+                </td>
                 <td class="px-6 py-4">
                     <div class="text-sm font-bold text-gray-900">{{ $item->name }}</div>
                 </td>

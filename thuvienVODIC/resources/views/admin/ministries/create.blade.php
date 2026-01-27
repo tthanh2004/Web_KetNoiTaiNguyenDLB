@@ -7,13 +7,24 @@
     <form action="{{ route('admin.ministries.store') }}" method="POST">
         @csrf
         
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Tên Bộ / Ngành <span class="text-red-500">*</span></label>
-            <input type="text" name="name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" 
-                   required placeholder="VD: Bộ Tài nguyên và Môi trường">
-            @error('name')
-                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-            @enderror
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="col-span-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Mã viết tắt <span class="text-red-500">*</span></label>
+                <input type="text" name="code" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border uppercase" 
+                       required placeholder="VD: BTNMT">
+                @error('code')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tên Bộ / Ngành <span class="text-red-500">*</span></label>
+                <input type="text" name="name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" 
+                       required placeholder="VD: Bộ Tài nguyên và Môi trường">
+                @error('name')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         <div class="flex justify-end gap-3">

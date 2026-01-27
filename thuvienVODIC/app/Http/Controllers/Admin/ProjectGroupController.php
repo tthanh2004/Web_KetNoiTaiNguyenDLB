@@ -4,62 +4,86 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\ProjectGroup;
 
 class ProjectGroupController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Danh sách nhóm dự án
      */
     public function index()
     {
-        //
+        // Lấy danh sách kèm số lượng dự án con
+        $groups = ProjectGroup::withCount('projects')->orderBy('id', 'desc')->paginate(10);
+        return view('admin.project_groups.index', compact('groups'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Form thêm mới
      */
     public function create()
     {
-        //
+        return view('admin.project_groups.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu dữ liệu
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:project_groups,name',
+        ], [
+            'name.required' => 'Tên nhóm dự án không được để trống.',
+            'name.unique' => 'Tên nhóm này đã tồn tại.',
+        ]);
+
+        ProjectGroup::create($request->all());
+
+        return redirect()->route('admin.project-groups.index')
+                         ->with('success', 'Thêm nhóm dự án thành công!');
     }
 
     /**
-     * Display the specified resource.
+     * Form chỉnh sửa
      */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        $group = ProjectGroup::findOrFail($id);
+        return view('admin.project_groups.edit', compact('group'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Cập nhật dữ liệu
      */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255|unique:project_groups,name,'.$id,
+        ]);
+
+        $group = ProjectGroup::findOrFail($id);
+        $group->update($request->all());
+
+        return redirect()->route('admin.project-groups.index')
+                         ->with('success', 'Cập nhật thành công!');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Xóa nhóm
      */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        //
-    }
+        $group = ProjectGroup::findOrFail($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Kiểm tra nếu nhóm đang có dự án thì không cho xóa để bảo toàn dữ liệu
+        if ($group->projects()->count() > 0) {
+            return back()->with('error', 'Không thể xóa! Nhóm này đang chứa các Dự án.');
+        }
+
+        $group->delete();
+
+        return redirect()->route('admin.project-groups.index')
+                         ->with('success', 'Đã xóa nhóm dự án!');
     }
 }
