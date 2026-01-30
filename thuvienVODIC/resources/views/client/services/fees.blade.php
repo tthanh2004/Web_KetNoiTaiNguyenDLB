@@ -2,8 +2,8 @@
 @section('content')
 <div class="bg-slate-50 py-12">
     <div class="container mx-auto px-4 max-w-4xl">
-        <h1 class="text-3xl font-serif text-blue-900 mb-2 font-bold text-center">Biểu mức thu phí</h1>
-        <p class="text-center text-slate-500 mb-10">Quy định về mức thu, chế độ thu, nộp, quản lý và sử dụng phí khai thác dữ liệu.</p>
+        <h1 class="text-3xl font-serif text-blue-900 mb-2 font-bold text-center">BIỂU MỨC THU PHÍ KHAI THÁC, SỬ DỤNG DỮ LIỆU TÀI NGUYÊN, MÔI TRƯỜNG BIỂN VÀ HẢI ĐẢO</h1>
+        <p class="text-center text-slate-500 mb-10">(Thông tư số 294/2016/TT-BTC  ngày 15 tháng 11 năm 2016 của Bộ Tài chính)</p>
 
         <div class="space-y-8">
             @foreach($feeCategories as $cat)

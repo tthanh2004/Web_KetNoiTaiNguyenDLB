@@ -30,8 +30,8 @@
                         <i class="fa-solid fa-anchor text-xl"></i>
                     </div>
                     <div class="hidden sm:block leading-tight">
-                        <div class="font-bold text-lg uppercase text-blue-900 tracking-wide">Thư viện VODIC</div>
-                        <div class="text-[10px] text-blue-500 uppercase tracking-widest font-semibold">Dữ liệu biển & hải đảo</div>
+                        <div class="font-bold text-lg uppercase text-blue-900 tracking-wide">Trung tâm Thông tin, dữ liệ biển và hải đảo quốc gia</div>
+                        <div class="text-[10px] text-blue-500 uppercase tracking-widest font-semibold">CỤC BIỂN VÀ HẢI ĐẢO VIỆT NAM</div>
                     </div>
                 </a>
 

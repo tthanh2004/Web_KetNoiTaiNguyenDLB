@@ -15,9 +15,14 @@
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 mb-1">Trực thuộc Bộ</label>
         <select name="ministry_id" class="w-full border-gray-300 rounded p-2 border">
-            <option value="">-- Chọn Bộ ngành --</option>
+            <option value="" {{ $unit->ministry_id === null ? 'selected' : '' }}>
+                -- Đơn vị độc lập (Không thuộc Bộ) --
+            </option>
+            
             @foreach($ministries as $min)
-                <option value="{{ $min->id }}" {{ $unit->ministry_id == $min->id ? 'selected' : '' }}>{{ $min->name }}</option>
+                <option value="{{ $min->id }}" {{ $unit->ministry_id == $min->id ? 'selected' : '' }}>
+                    {{ $min->name }}
+                </option>
             @endforeach
         </select>
     </div>

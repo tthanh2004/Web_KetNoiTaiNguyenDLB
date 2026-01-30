@@ -51,4 +51,34 @@ class FeeCategoryController extends Controller
 
         return back()->with('success', 'Đã xóa nhóm phí thành công!');
     }
+
+    /**
+     * Mở form chỉnh sửa Nhóm phí
+     */
+    public function edit($id)
+    {
+        $feeCategory = \App\Models\FeeCategory::findOrFail($id);
+        // Trả về view sửa nhóm (đã tạo ở bước trước)
+        return view('admin.fees.edit-category', compact('feeCategory'));
+    }
+
+    /**
+     * Lưu cập nhật Nhóm phí
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'order' => 'nullable|integer',
+        ]);
+
+        $feeCategory = \App\Models\FeeCategory::findOrFail($id);
+        $feeCategory->update([
+            'name' => $request->name,
+            'order' => $request->order ?? 0,
+        ]);
+
+        return redirect()->route('admin.fee-categories.index')
+                         ->with('success', 'Cập nhật nhóm phí thành công!');
+    }
 }

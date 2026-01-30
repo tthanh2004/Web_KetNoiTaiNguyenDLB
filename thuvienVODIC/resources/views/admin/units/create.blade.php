@@ -13,12 +13,16 @@
 
     <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 mb-1">Trực thuộc Bộ / Ngành</label>
-        <select name="ministry_id" class="w-full border-gray-300 rounded-md shadow-sm">
-            <option value="">-- Chọn Bộ ngành (Nếu có) --</option>
+        <select name="ministry_id" class="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+            <option value="">-- Đơn vị độc lập (Không thuộc Bộ) --</option>
+            
             @foreach($ministries as $min)
-                <option value="{{ $min->id }}">{{ $min->name }}</option>
+                <option value="{{ $min->id }}" {{ old('ministry_id') == $min->id ? 'selected' : '' }}>
+                    {{ $min->name }}
+                </option>
             @endforeach
         </select>
+        <p class="text-xs text-gray-500 mt-1">Để trống nếu là đơn vị tư nhân hoặc tổ chức quốc tế.</p>
     </div>
 
     <div class="flex justify-end gap-3">

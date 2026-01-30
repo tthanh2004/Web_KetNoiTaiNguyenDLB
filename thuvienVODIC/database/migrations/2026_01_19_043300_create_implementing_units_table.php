@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name'); // Tên đơn vị (Viện Hải dương học...)
             
             // Liên kết: Đơn vị này thuộc Bộ nào?
-            $table->foreignId('ministry_id')->constrained('ministries');
-            
+            $table->foreignId('ministry_id')->nullable()->constrained('ministries');
             $table->timestamps();
         });
     }
@@ -28,5 +27,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('implementing_units');
+        $table->unsignedBigInteger('ministry_id')->nullable(false)->change();
     }
 };
