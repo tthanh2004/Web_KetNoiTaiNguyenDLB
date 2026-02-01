@@ -35,4 +35,35 @@ class FeeItemController extends Controller
 
         return back()->with('success', 'Đã xóa phí!');
     }
+
+    public function edit($id)
+    {
+        $feeItem = FeeItem::findOrFail($id);
+        // Trả về view sửa chi tiết phí
+        return view('admin.fees.edit-item', compact('feeItem'));
+    }
+
+    /**
+     * Lưu cập nhật
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $feeItem = FeeItem::findOrFail($id);
+        
+        $feeItem->update([
+            'name' => $request->name,
+            'unit' => $request->unit,
+            'price' => $request->price,
+        ]);
+
+        // Sau khi sửa xong, quay lại trang danh sách nhóm phí
+        return redirect()->route('admin.fee-categories.index')
+                         ->with('success', 'Cập nhật chi tiết phí thành công!');
+    }
 }

@@ -71,4 +71,10 @@ class Project extends Model
     {
         return $this->hasMany(Project::class, 'parent_id');
     }
+
+    public function documents()
+    {
+        // Giả sử bảng documents có cột project_id
+        return $this->hasMany(Document::class);
+    }
 }

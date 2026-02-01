@@ -4,7 +4,7 @@
 <div class="bg-slate-50 min-h-screen py-10">
     <div class="container mx-auto px-4 md:px-6 max-w-6xl">
         <div class="text-center mb-10">
-            <h1 class="text-3xl font-serif text-blue-900 font-bold">Tổng quan Dự án Điều tra Cơ bản</h1>
+            <h1 class="text-3xl text-blue-900 font-bold">Tổng quan Dự án Điều tra Cơ bản</h1>
             <p class="text-slate-500">Thống kê toàn bộ dữ liệu dự án tài nguyên môi trường biển qua các thời kỳ.</p>
         </div>
 

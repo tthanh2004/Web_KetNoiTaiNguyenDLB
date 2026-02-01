@@ -4,7 +4,7 @@
 <div class="bg-white min-h-screen py-12">
     <div class="container mx-auto px-4 max-w-5xl">
         <div class="text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-serif text-blue-900 font-bold mb-4">Các dịch vụ khác</h1>
+            <h1 class="text-3xl md:text-4xl text-blue-900 font-bold mb-4">Các dịch vụ khác</h1>
             <p class="text-slate-500 max-w-2xl mx-auto">Ngoài việc cung cấp dữ liệu thô, chúng tôi cung cấp các dịch vụ gia tăng giá trị từ dữ liệu biển và hải đảo.</p>
         </div>
 
@@ -57,7 +57,7 @@
 
         <div class="bg-blue-900 rounded-2xl p-8 md:p-12 text-center text-white relative overflow-hidden">
             <div class="relative z-10">
-                <h2 class="text-2xl md:text-3xl font-bold mb-4 font-serif">Bạn có yêu cầu đặc biệt?</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mb-4">Bạn có yêu cầu đặc biệt?</h2>
                 <p class="text-blue-100 mb-8 max-w-2xl mx-auto">Hãy gửi yêu cầu chi tiết cho chúng tôi. Đội ngũ chuyên gia sẽ liên hệ lại để tư vấn giải pháp phù hợp nhất.</p>
                 <a href="{{ route('client.request.create') }}" class="inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:-translate-y-1">
                     Gửi yêu cầu ngay

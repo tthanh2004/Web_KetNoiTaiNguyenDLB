@@ -35,7 +35,7 @@
                     @endif
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <a href="{{ Storage::url($doc->file_url) }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">
+                    <a href="{{ route('admin.documents.download', $doc->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
                         <i class="fa-solid fa-download mr-1"></i> Tải về
                     </a>
                     @if($doc->type)

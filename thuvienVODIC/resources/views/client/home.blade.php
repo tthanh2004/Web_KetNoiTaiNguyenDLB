@@ -28,12 +28,6 @@
                 <h2 class="text-2xl font-bold text-slate-900 uppercase tracking-wide border-l-[6px] border-blue-800 pl-4 leading-none">
                     Các dự án công khai
                 </h2>
-                <div class="flex items-center mt-4 text-sm text-slate-500">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-slate-200 shadow-sm">
-                        <i class="fa-regular fa-clock mr-2 text-blue-600 animate-pulse"></i> 
-                        Mẹo: Hover <b class="text-blue-700 mx-1">1.5s</b> để mở nhanh
-                    </span>
-                </div>
             </div>
             <a href="#" class="text-blue-700 hover:text-blue-900 font-semibold group flex items-center transition-colors">
                 Xem tất cả <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>

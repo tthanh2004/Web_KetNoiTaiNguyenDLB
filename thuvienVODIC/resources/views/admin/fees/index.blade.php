@@ -1,9 +1,28 @@
 @extends('admin.layout.app')
 
+@php
+    if (!function_exists('toRoman')) {
+        function toRoman($number) {
+            $map = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
+            $returnValue = '';
+            while ($number > 0) {
+                foreach ($map as $roman => $int) {
+                    if ($number >= $int) {
+                        $number -= $int;
+                        $returnValue .= $roman;
+                        break;
+                    }
+                }
+            }
+            return $returnValue;
+        }
+    }
+@endphp
+
 @section('content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800">Quản lý Biểu Phí Dịch vụ</h1>
-    <button onclick="document.getElementById('addCategoryModal').classList.remove('hidden')" class="bg-green-600 text-white px-4 py-2 rounded shadow">
+    <button onclick="document.getElementById('addCategoryModal').classList.remove('hidden')" class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 transition">
         <i class="fa-solid fa-folder-plus mr-2"></i> Thêm Nhóm phí mới
     </button>
 </div>
@@ -13,7 +32,11 @@
     <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
         
         <div class="bg-gray-100 px-6 py-3 flex justify-between items-center border-b">
-            <h3 class="font-bold text-gray-800 uppercase">{{ $cat->name }}</h3>
+            {{-- SỐ LA MÃ CHO NHÓM --}}
+            <h3 class="font-bold text-gray-800 uppercase text-lg">
+                <span class="text-blue-800 mr-2">{{ toRoman($loop->iteration) }}.</span> {{ $cat->name }}
+            </h3>
+
             <div class="flex gap-2 items-center">
                 <button class="text-blue-600 text-sm hover:underline mr-2" onclick="openAddItemModal({{ $cat->id }})">
                     <i class="fa-solid fa-plus"></i> Thêm dòng phí
@@ -35,6 +58,7 @@
         <table class="w-full text-sm text-left">
             <thead class="text-gray-500 bg-gray-50 border-b">
                 <tr>
+                    <th class="px-6 py-2 w-16 text-center">STT</th>
                     <th class="px-6 py-2">Tên loại phí</th>
                     <th class="px-6 py-2 w-32">Đơn vị tính</th>
                     <th class="px-6 py-2 w-40 text-right">Giá (VNĐ)</th>
@@ -44,6 +68,8 @@
             <tbody class="divide-y divide-gray-100">
                 @foreach($cat->feeItems as $item)
                 <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-2 text-center text-gray-400 font-medium">{{ $loop->iteration }}</td>
+                    
                     <td class="px-6 py-2">{{ $item->name }}</td>
                     <td class="px-6 py-2">{{ $item->unit }}</td>
                     <td class="px-6 py-2 text-right font-bold">{{ number_format($item->price) }}</td>

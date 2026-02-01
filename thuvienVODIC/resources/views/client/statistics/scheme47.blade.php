@@ -12,7 +12,7 @@
                 <span class="inline-block py-1 px-3 rounded bg-yellow-500 text-blue-900 text-xs font-bold uppercase tracking-wider mb-4">
                     Quyết định số 47/2006/QĐ-TTg
                 </span>
-                <h1 class="text-3xl md:text-5xl font-serif font-bold mb-4 leading-tight">
+                <h1 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">
                     Đề án 47
                 </h1>
                 <p class="text-blue-100 text-lg max-w-3xl mb-8">

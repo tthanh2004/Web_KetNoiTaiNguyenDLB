@@ -5,7 +5,7 @@
     <div class="container mx-auto px-4 md:px-6">
         
         <div class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-serif text-blue-900 font-bold mb-2">
+            <h1 class="text-3xl md:text-4xl text-blue-900 font-bold mb-2">
                 Tra cứu Dự án & Đề án
             </h1>
             <p class="text-slate-500">Hệ thống cơ sở dữ liệu các dự án điều tra cơ bản tài nguyên, môi trường biển.</p>

@@ -2,7 +2,7 @@
 @section('content')
 <div class="bg-white py-12">
     <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-serif text-blue-900 mb-6 font-bold text-center">Kho Tài liệu số Quốc gia</h1>
+        <h1 class="text-3xl text-blue-900 mb-6 font-bold text-center">Kho Tài liệu số Quốc gia</h1>
         
         <div class="max-w-2xl mx-auto mb-10">
             <form action="{{ route('client.documents.index') }}" method="GET" class="relative">

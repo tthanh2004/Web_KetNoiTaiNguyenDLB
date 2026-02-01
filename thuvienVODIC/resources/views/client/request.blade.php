@@ -5,7 +5,7 @@
     <div class="container mx-auto px-6">
         <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
             <div class="bg-blue-800 px-8 py-6 text-white">
-                <h1 class="text-2xl font-serif font-bold mb-2">Gửi yêu cầu dữ liệu</h1>
+                <h1 class="text-2xl font-bold mb-2">Gửi yêu cầu dữ liệu</h1>
                 <p class="text-blue-100 text-sm font-light">Vui lòng điền thông tin chi tiết để chúng tôi hỗ trợ tốt nhất.</p>
             </div>
 

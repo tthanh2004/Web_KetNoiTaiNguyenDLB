@@ -5,7 +5,7 @@
     <div class="container mx-auto px-4 md:px-6 max-w-5xl">
         
         <div class="mb-10">
-            <h1 class="text-3xl md:text-4xl font-serif text-blue-900 mb-2 font-bold">
+            <h1 class="text-3xl md:text-4xl text-blue-900 mb-2 font-bold">
                 Tra cứu sản phẩm & Tài liệu
             </h1>
             <p class="text-slate-500 mb-8">Hệ thống cơ sở dữ liệu tài nguyên, môi trường biển và hải đảo quốc gia.</p>

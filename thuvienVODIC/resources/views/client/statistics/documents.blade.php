@@ -6,7 +6,7 @@
         
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-serif text-blue-900 font-bold mb-2">Thống kê Tài liệu số hóa</h1>
+                <h1 class="text-3xl text-blue-900 font-bold mb-2">Thống kê Tài liệu số hóa</h1>
                 <p class="text-slate-500 max-w-2xl">Kho lưu trữ số hóa các báo cáo khoa học, số liệu điều tra cơ bản và bản đồ biển đảo.</p>
             </div>
             <div class="w-full md:w-auto">

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&family=Inter:wght@300;400;500;600;700&display=swap');
         
         body { font-family: 'Inter', sans-serif; }
         .font-serif { font-family: 'Merriweather', serif; }
@@ -22,27 +22,35 @@
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
 
     <header class="bg-white/95 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
-        <div class="container mx-auto px-4 sm:px-6 py-3">
-            <div class="flex items-center">
+        <div class="container mx-auto px-2 sm:px-4 lg:px-8 py-3">
+            <div class="flex items-center justify-between lg:justify-start gap-4">
                 
-                <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-none">
-                    <div class="w-10 h-10 bg-blue-900 text-white flex items-center justify-center rounded-lg shadow-lg group-hover:bg-cyan-700 transition-colors">
-                        <i class="fa-solid fa-anchor text-xl"></i>
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-none max-w-[70%] lg:max-w-max">
+                    <div class="flex-none">
+                        <img src="{{ asset('img/logovodic.jpg') }}" 
+                            alt="Logo VODIC" 
+                            class="h-10 md:h-12 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
                     </div>
+
                     <div class="hidden sm:block leading-tight">
-                        <div class="font-bold text-lg uppercase text-blue-900 tracking-wide">Trung tâm Thông tin, dữ liệ biển và hải đảo quốc gia</div>
-                        <div class="text-[10px] text-blue-500 uppercase tracking-widest font-semibold">CỤC BIỂN VÀ HẢI ĐẢO VIỆT NAM</div>
+                        <div class="font-bold text-sm md:text-base lg:text-lg text-red-500 tracking-wide font-semibold leading-tight">
+                            Trung tâm Thông tin, dữ liệu biển<br>
+                            và hải đảo quốc gia
+                        </div>
+                        <div class="text-[15px] text-blue-500 uppercase tracking-widest font-semibold font-sans">
+                            CỤC BIỂN VÀ HẢI ĐẢO VIỆT NAM
+                        </div>
                     </div>
                 </a>
 
-                <nav class="hidden lg:flex items-center space-x-1 text-sm font-bold text-blue-900 ml-auto mr-4">
+                <nav class="hidden lg:flex items-center space-x-0 xl:space-x-1 text-[13px] xl:text-sm font-bold text-blue-900 ml-auto">
                     
-                    <a href="{{ route('home') }}" class="hover:text-cyan-600 hover:bg-blue-50 px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('home') ? 'text-cyan-700 bg-blue-50' : '' }}">
+                    <a href="{{ route('home') }}" class="whitespace-nowrap hover:text-cyan-600 hover:bg-blue-50 px-2 xl:px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('home') ? 'text-cyan-700 bg-blue-50' : '' }}">
                         <i class="fa-solid fa-house-chimney"></i> Trang chủ
                     </a>
 
-                    <div class="relative group px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 group-hover:text-cyan-600">
+                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
+                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600">
                             <i class="fa-solid fa-magnifying-glass"></i> Tra cứu 
                             <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
                         </span>
@@ -58,12 +66,12 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('client.documents.index') }}" class="hover:text-cyan-600 hover:bg-blue-50 px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('client.documents.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
+                    <a href="{{ route('client.documents.index') }}" class="whitespace-nowrap hover:text-cyan-600 hover:bg-blue-50 px-2 xl:px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('client.documents.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
                         <i class="fa-solid fa-database"></i> Tài liệu số
                     </a>
 
-                    <div class="relative group px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 group-hover:text-cyan-600">
+                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
+                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600">
                             <i class="fa-solid fa-hand-holding-heart"></i> Dịch vụ 
                             <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
                         </span>
@@ -82,8 +90,8 @@
                         </div>
                     </div>
 
-                    <div class="relative group px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 group-hover:text-cyan-600 {{ request()->routeIs('client.statistics.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
+                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
+                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600 {{ request()->routeIs('client.statistics.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
                             <i class="fa-solid fa-chart-simple"></i> Thống kê 
                             <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
                         </span>
@@ -108,8 +116,8 @@
                         </div>
                     </div>
 
-                    <div class="relative group px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 group-hover:text-cyan-600 {{ request()->routeIs('client.help.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
+                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
+                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600 {{ request()->routeIs('client.help.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
                             <i class="fa-solid fa-life-ring"></i> Trợ giúp 
                             <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
                         </span>
@@ -129,13 +137,13 @@
                     </div>
                 </nav>
 
-                <div class="flex items-center gap-3 flex-none">
+                <div class="flex items-center gap-2 xl:gap-3 flex-none ml-auto lg:ml-0">
                     @if (Route::has('login'))
                         @auth
                             <div class="relative group hidden lg:block">
-                                <button class="flex items-center gap-2 bg-blue-50 text-blue-800 px-4 py-2 rounded-full font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm">
+                                <button class="flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-2 rounded-full font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm">
                                     <div class="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-blue-800"><i class="fa-solid fa-user text-[10px]"></i></div>
-                                    <span class="truncate max-w-[100px]">{{ Auth::user()->name }}</span>
+                                    <span class="truncate max-w-[80px] xl:max-w-[120px]">{{ Auth::user()->name }}</span>
                                     <i class="fa-solid fa-caret-down opacity-50 group-hover:rotate-180 transition-transform"></i>
                                 </button>
                                 <div class="dropdown-menu absolute right-0 top-full pt-2 w-56">
@@ -153,7 +161,7 @@
                                 </div>
                             </div>
                         @else
-                            <a href="{{ route('login') }}" class="hidden lg:flex items-center gap-2 bg-blue-900 text-white px-6 py-2.5 rounded-full font-bold text-xs shadow-md hover:bg-cyan-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                            <a href="{{ route('login') }}" class="hidden lg:flex items-center gap-2 bg-blue-900 text-white px-4 xl:px-6 py-2 xl:py-2.5 rounded-full font-bold text-xs shadow-md hover:bg-cyan-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
                                 <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
                             </a>
                         @endauth

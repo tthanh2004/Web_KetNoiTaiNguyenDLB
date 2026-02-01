@@ -67,32 +67,33 @@ Route::view('/lien-he', 'client.help.contact')->name('client.help.contact');
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+   // Dashboard
+   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Quản lý Dự án
-    Route::resource('projects', AdminProjectController::class);
+   // Quản lý Dự án
+   Route::resource('projects', AdminProjectController::class);
 
-    // Quản lý Đơn vị thực hiện
-    Route::resource('units', AdminUnitController::class);
+   // Quản lý Đơn vị thực hiện
+   Route::resource('units', AdminUnitController::class);
 
-    // Quản lý Bộ ngành
-    Route::resource('ministries', MinistryController::class);
+   // Quản lý Bộ ngành
+   Route::resource('ministries', MinistryController::class);
 
-    // Quản lý Tài liệu số
-    Route::resource('documents', AdminDocumentController::class);
+   // Quản lý Tài liệu số
+   Route::resource('documents', AdminDocumentController::class);
 
-    // Quản lý Biểu phí (Nhóm phí & Loại phí chi tiết)
-    Route::resource('fee-categories', AdminFeeCategoryController::class);
-    Route::resource('fee-items', AdminFeeItemController::class);
+   // Quản lý Biểu phí (Nhóm phí & Loại phí chi tiết)
+   Route::resource('fee-categories', AdminFeeCategoryController::class);
+   Route::resource('fee-items', AdminFeeItemController::class);
 
-    // Quản lý Yêu cầu dữ liệu (Chỉ Xem, Cập nhật, Xóa - Không có Tạo mới)
-    // Lưu ý: Đặt tên resource là 'data_requests' để khớp với Sidebar của bạn
-    Route::resource('requests', AdminRequestController::class)->only(['index', 'update', 'destroy']);    
-    // Route riêng để update trạng thái nhanh (nếu cần dùng Ajax/Patch)
-    Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
-    // Quản lý Nhóm dự án
-    Route::resource('project-groups', AdminProjectGroupController::class);
+   // Quản lý Yêu cầu dữ liệu (Chỉ Xem, Cập nhật, Xóa - Không có Tạo mới)
+   Route::resource('requests', AdminRequestController::class)->only(['index', 'update', 'destroy']);    
+   // Route riêng để update trạng thái nhanh (nếu cần dùng Ajax/Patch)
+   Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
+   // Quản lý Nhóm dự án
+   Route::resource('project-groups', AdminProjectGroupController::class);
+
+   Route::get('documents/{id}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
 });
 
 /* ==========================================================================

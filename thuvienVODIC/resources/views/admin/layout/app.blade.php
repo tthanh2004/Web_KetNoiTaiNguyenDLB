@@ -25,9 +25,12 @@
         <aside :class="sidebarOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'"
                class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transition-transform duration-300 md:relative md:translate-x-0 flex flex-col shadow-xl">
             
-            <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-900">
-                <i class="fa-solid fa-database text-2xl text-blue-500 mr-3"></i>
-                <span class="font-bold text-lg tracking-wide">VODIC Admin</span>
+            <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-900 gap-3">
+                <img src="{{ asset('img/logovodic.jpg') }}" 
+                    alt="VODIC Admin Logo"
+                    class="h-10 w-auto object-contain rounded bg-white p-0.5">
+                    
+                <span class="font-bold text-lg tracking-wide text-white">VODIC Admin</span>
             </div>
 
             <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">

@@ -5,7 +5,7 @@
     <div class="container mx-auto px-4 md:px-6 max-w-5xl">
         
         <div class="text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-serif text-blue-900 font-bold mb-4">Thống kê theo Đơn vị thực hiện</h1>
+            <h1 class="text-3xl md:text-4xl text-blue-900 font-bold mb-4">Thống kê theo Đơn vị thực hiện</h1>
             <p class="text-slate-500">Top các đơn vị có đóng góp nhiều nhất trong công tác điều tra cơ bản.</p>
         </div>
 

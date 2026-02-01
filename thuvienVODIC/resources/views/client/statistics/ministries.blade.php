@@ -5,7 +5,7 @@
     <div class="container mx-auto px-4 md:px-6 max-w-6xl">
         
         <div class="text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-serif text-blue-900 font-bold mb-4">Thống kê theo Bộ ngành</h1>
+            <h1 class="text-3xl md:text-4xl text-blue-900 font-bold mb-4">Thống kê theo Bộ ngành</h1>
             <p class="text-slate-500 max-w-2xl mx-auto">
                 Phân loại các nhiệm vụ, dự án điều tra cơ bản tài nguyên môi trường biển theo cơ quan chủ quản.
             </p>
