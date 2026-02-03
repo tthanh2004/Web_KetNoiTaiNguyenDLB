@@ -26,6 +26,8 @@ use App\Http\Controllers\Client\StatisticController as ClientStatisticController
 use App\Http\Controllers\Client\StatisticController as StatisticController;
 use App\Http\Controllers\Client\HelpController as ClientHelpController;
 use App\Http\Controllers\Client\SearchController as ClientSearchController;
+use App\Http\Controllers\Client\DocumentController as DocumentController;
+
 
 /* ==========================================================================
    KHÁCH (PUBLIC ROUTES)
@@ -63,6 +65,10 @@ Route::view('/huong-dan', 'client.help.guide')->name('client.help.guide');
 Route::view('/lien-he', 'client.help.contact')->name('client.help.contact');
 // 7. Tìm kiếm
 Route::get('/tra-cuu', [App\Http\Controllers\Client\SearchController::class, 'index'])->name('client.search');
+// 8. Tải tài liệu
+Route::get('/tai-lieu/tai-xuong/{id}', [ClientDocumentController::class, 'download'])->name('client.documents.download');
+// 9. Chi tiết tài liệu
+Route::get('/tai-lieu/{id}', [DocumentController::class, 'show'])->name('client.documents.detail');
 
 /* ==========================================================================
    QUẢN TRỊ (ADMIN ROUTES)

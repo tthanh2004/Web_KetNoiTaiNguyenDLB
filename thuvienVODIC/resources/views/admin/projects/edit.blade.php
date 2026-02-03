@@ -63,6 +63,17 @@
                         @endforeach
                     </select>
                 </div>
+                <div class="mt-4 md:mt-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Lĩnh vực nghiên cứu <span class="text-red-500">*</span></label>
+                    <select name="field_id" required class="w-full border-gray-300 rounded p-2 bg-white border focus:ring-blue-500">
+                        <option value="">-- Chọn lĩnh vực --</option>
+                        @foreach($fields as $field)
+                            <option value="{{ $field->id }}" {{ old('field_id') == $field->id ? 'selected' : '' }}>
+                                {{ $field->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -104,17 +115,16 @@
             {{-- CASE A: BỘ CHỦ TRÌ (Hiện khi parent_id Rỗng) --}}
             <div id="ministryWrapper">
                 <label class="block text-sm font-bold text-blue-900 mb-1">
-                    <i class="fa-solid fa-landmark mr-1"></i> Bộ / Ngành chủ trì <span class="text-red-500">*</span>
+                    <i class="fa-solid fa-landmark mr-1"></i> Bộ / Ngành chủ trì
                 </label>
                 <select name="ministry_id" id="ministrySelect" class="w-full border-blue-300 rounded p-2 bg-blue-50 border">
                     <option value="">-- Chọn Bộ ngành --</option>
                     @foreach($ministries as $min)
-                        <option value="{{ $min->id }}" {{ old('ministry_id', $project->ministry_id) == $min->id ? 'selected' : '' }}>
+                        <option value="{{ $min->id }}" {{ old('ministry_id', $project->ministry_id ?? '') == $min->id ? 'selected' : '' }}>
                             {{ $min->name }}
                         </option>
                     @endforeach
                 </select>
-                <p class="text-xs text-blue-600 mt-1">Dành cho Dự án Lớn (Cấp Chính phủ/Bộ)</p>
             </div>
 
             {{-- CASE B: ĐƠN VỊ THỰC HIỆN (Hiện khi parent_id Có giá trị) --}}
@@ -206,7 +216,6 @@
 </div>
 
 <script>
-    // Preview Ảnh
     function previewImage(input) {
         const preview = document.getElementById('imgPreview');
         if (input.files && input.files[0]) {
@@ -218,36 +227,33 @@
         }
     }
 
-    // Logic Ẩn/Hiện Form Bộ & Đơn vị (Quan trọng: Thêm .disabled để không gửi dữ liệu rác)
     function toggleOwnerFields() {
-        const parentId = document.getElementById('parentSelect').value;
+        const parentSelect = document.getElementById('parentSelect');
+        const parentId = parentSelect.value;
+        
         const ministryWrapper = document.getElementById('ministryWrapper');
         const unitWrapper = document.getElementById('unitWrapper');
         const ministrySelect = document.getElementById('ministrySelect');
         const unitSelect = document.getElementById('unitSelect');
 
         if (parentId) {
-            // LÀ DỰ ÁN CON: Hiện Đơn vị, Ẩn Bộ
+            // DỰ ÁN CON
             ministryWrapper.classList.add('hidden');
-            ministrySelect.disabled = true; 
-            ministrySelect.required = false;
+            ministrySelect.disabled = true; // Disable để không gửi dữ liệu Bộ lên
 
             unitWrapper.classList.remove('hidden');
-            unitSelect.disabled = false;
-            unitSelect.required = true;
+            unitSelect.disabled = false;    // Enable để gửi dữ liệu Đơn vị lên
         } else {
-            // LÀ DỰ ÁN CHA: Hiện Bộ, Ẩn Đơn vị
+            // DỰ ÁN CHA
             ministryWrapper.classList.remove('hidden');
-            ministrySelect.disabled = false;
-            ministrySelect.required = false;
+            ministrySelect.disabled = false; // QUAN TRỌNG: Phải enable để gửi dữ liệu Bộ lên
 
             unitWrapper.classList.add('hidden');
-            unitSelect.disabled = true;
-            unitSelect.required = false;
+            unitSelect.disabled = true;      // Disable đơn vị
         }
     }
 
-    // Chạy khi load trang
+    // Chạy ngay khi tải trang
     document.addEventListener('DOMContentLoaded', toggleOwnerFields);
 </script>
 @endsection

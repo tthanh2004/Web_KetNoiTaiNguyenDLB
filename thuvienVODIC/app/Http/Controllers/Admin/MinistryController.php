@@ -22,8 +22,6 @@ class MinistryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            // Thêm 'nullable': Cho phép để trống
-            // Sửa 'unique:ministries,code': Cú pháp đúng để check trùng
             'code' => 'nullable|string|max:20|unique:ministries,code', 
             'name' => 'required|string|max:255|unique:ministries,name',
         ], 

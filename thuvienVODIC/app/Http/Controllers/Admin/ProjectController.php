@@ -8,13 +8,14 @@ use App\Models\Project;
 use App\Models\ProjectGroup;
 use App\Models\Ministry;
 use App\Models\ImplementingUnit;
+use App\Models\Field; // Thêm Model Field
 use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::with(['project_group', 'implementing_unit', 'ministry', 'parent'])
+        $projects = Project::with(['project_group', 'implementing_unit', 'ministry', 'parent', 'field'])
                            ->orderBy('id', 'desc')
                            ->paginate(10);
         return view('admin.projects.index', compact('projects'));
@@ -25,12 +26,13 @@ class ProjectController extends Controller
         $ministries = Ministry::all(); 
         $groups = ProjectGroup::all();
         $units = ImplementingUnit::all();
+        $fields = Field::all(); // Lấy danh sách Lĩnh vực
         
         $parents = Project::select('id', 'name', 'code_number')
                           ->orderBy('created_at', 'desc')
                           ->get();
 
-        return view('admin.projects.create', compact('groups', 'units', 'parents', 'ministries'));
+        return view('admin.projects.create', compact('groups', 'units', 'parents', 'ministries', 'fields'));
     }
 
     public function store(Request $request)
@@ -38,42 +40,42 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required',
             'project_group_id' => 'required',
-            
-            // --- SỬA: Cho phép null, không bắt buộc nữa ---
+            'field_id' => 'required|exists:fields,id', // Validate Lĩnh vực
             'ministry_id' => 'nullable', 
-            
-            'implementing_unit_id' => 'required_with:parent_id',
+            'implementing_unit_id' => 'nullable',
             'thumbnail' => 'nullable|image|max:5120',
             'start_year' => 'nullable|integer',
-        ], [
-            // Bạn có thể bỏ thông báo lỗi tùy chỉnh cho ministry_id vì nó không còn required
-            'implementing_unit_id.required_with' => 'Vui lòng chọn Đơn vị thực hiện (đối với dự án thành phần).',
         ]);
 
-        $data = $request->all();
+        // Chỉ lấy các trường cần thiết để tránh dữ liệu rác từ request->all()
+        $data = $request->only([
+            'name', 'project_group_id', 'field_id', 'code_number', 'library_code',
+            'content', 'note', 'start_year', 'end_year', 'handover_time',
+            'scale', 'budget', 'price', 'cabinet_location', 'status'
+        ]);
 
-        // 1. Logic Cha/Con
+        // LOGIC CHA/CON TƯỜNG MINH
         if ($request->filled('parent_id')) {
-            // LÀ CON: Bộ phải null
-            $data['ministry_id'] = null;
+            $data['parent_id'] = $request->parent_id;
+            $data['implementing_unit_id'] = $request->implementing_unit_id;
+            $data['ministry_id'] = null; // Bắt buộc null nếu là dự án con
         } else {
-            // LÀ CHA: Đơn vị và Parent phải null
-            $data['implementing_unit_id'] = null;
             $data['parent_id'] = null;
-            // ministry_id sẽ lấy giá trị từ request (có thể là ID hoặc null nếu không chọn)
+            $data['implementing_unit_id'] = null;
+            $data['ministry_id'] = $request->ministry_id; // Lưu bộ ngành nếu là dự án lớn
         }
 
-        // 2. Xử lý upload ảnh
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
             $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
             $filename = time() . '_' . $cleanName;
-            
             $file->storeAs('projects', $filename, 'public');
             $data['thumbnail'] = 'storage/projects/' . $filename;
         }
 
         $data['user_id'] = auth()->id() ?? null;
+        $data['data_entry_person'] = auth()->user()->name ?? 'Admin';
+
         Project::create($data);
 
         return redirect()->route('admin.projects.index')->with('success', 'Thêm dự án thành công');
@@ -82,17 +84,17 @@ class ProjectController extends Controller
     public function edit($id)
     {
         $project = Project::with('children')->findOrFail($id);
-        
         $ministries = Ministry::all();
         $groups = ProjectGroup::all();
         $units = ImplementingUnit::all();
+        $fields = Field::all(); // Lấy danh sách Lĩnh vực
         
         $parents = Project::where('id', '!=', $id)
                           ->select('id', 'name', 'code_number')
                           ->orderBy('created_at', 'desc')
                           ->get();
 
-        return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries'));
+        return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries', 'fields'));
     }
 
     public function update(Request $request, $id)
@@ -102,35 +104,37 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required',
             'project_group_id' => 'required',
-            
-            // --- SỬA: Cho phép null ---
-            'ministry_id' => 'nullable',
-            
-            'implementing_unit_id' => 'required_with:parent_id',
+            'field_id' => 'required|exists:fields,id',
+            'ministry_id' => 'nullable|exists:ministries,id',
+            'implementing_unit_id' => 'nullable|exists:implementing_units,id',
             'thumbnail' => 'nullable|image|max:5120',
         ]);
 
-        $data = $request->except(['thumbnail']); 
+        $data = $request->only([
+            'name', 'project_group_id', 'field_id', 'code_number', 'start_year', 'end_year', 
+            'budget', 'price', 'library_code', 'cabinet_location', 'scale', 
+            'content', 'note', 'status'
+        ]);
 
-        // 1. Logic Cha/Con
         if ($request->filled('parent_id')) {
-            $data['ministry_id'] = null;
+            $data['parent_id'] = $request->parent_id;
+            $data['implementing_unit_id'] = $request->implementing_unit_id;
+            $data['ministry_id'] = null; 
         } else {
-            $data['implementing_unit_id'] = null;
             $data['parent_id'] = null;
+            $data['implementing_unit_id'] = null; 
+            $data['ministry_id'] = $request->ministry_id;
         }
 
-        // 2. Xử lý ảnh
         if ($request->hasFile('thumbnail')) {
             if ($project->thumbnail) {
                 $oldFile = str_replace('storage/', '', $project->thumbnail);
-                Storage::disk('public')->delete($oldFile);
+                if (Storage::disk('public')->exists($oldFile)) {
+                    Storage::disk('public')->delete($oldFile);
+                }
             }
-            
             $file = $request->file('thumbnail');
-            $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
-            $filename = time() . '_' . $cleanName;
-            
+            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
             $file->storeAs('projects', $filename, 'public');
             $data['thumbnail'] = 'storage/projects/' . $filename;
         }
@@ -145,10 +149,11 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         if ($project->thumbnail) {
              $oldFile = str_replace('storage/', '', $project->thumbnail);
-             Storage::disk('public')->delete($oldFile);
+             if (Storage::disk('public')->exists($oldFile)) {
+                 Storage::disk('public')->delete($oldFile);
+             }
         }
         $project->delete();
-        
         return redirect()->back()->with('success', 'Đã xóa dự án');
     }
 }

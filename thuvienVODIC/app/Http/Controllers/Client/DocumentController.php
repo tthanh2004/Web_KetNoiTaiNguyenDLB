@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -42,7 +43,6 @@ class DocumentController extends Controller
         }
 
         // 5. Lấy dữ liệu
-        // SỬA TẠI ĐÂY: Đổi tên biến thành $documents để khớp với View
         $documents = $query->orderBy('created_at', 'desc')->paginate(20);
 
         return view('client.documents.index', compact(
@@ -52,5 +52,30 @@ class DocumentController extends Controller
             'reportDocs', 
             'dataDocs'
         ));
+    }
+
+    public function download($id)
+    {
+        $document = Document::findOrFail($id);
+        
+        // Xử lý đường dẫn file
+        $path = $document->file_path;
+        
+        if (strpos($path, 'storage/') === 0) {
+            $path = str_replace('storage/', '', $path);
+        }
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->download($path, $document->title . '.' . $document->type);
+        }
+
+        return redirect()->back()->with('error', 'File không tồn tại hoặc đã bị xóa!');
+    }
+
+    public function show($id)
+    {
+        // Load tài liệu cùng với quan hệ project và đơn vị (ministry)
+        $document = Document::with(['project.ministry'])->findOrFail($id);
+        return view('client.documents.detail', compact('document'));
     }
 }

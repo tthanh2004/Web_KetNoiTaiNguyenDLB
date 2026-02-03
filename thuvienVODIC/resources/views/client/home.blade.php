@@ -39,18 +39,33 @@
             <div class="project-card group bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 overflow-hidden cursor-pointer relative flex flex-col h-full"
                  data-url="{{ route('client.project.detail', $project->id) }}">
                 
-                <div class="h-48 bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center relative overflow-hidden flex-shrink-0">
-                    <i class="fa-solid fa-folder-open text-9xl text-white absolute -bottom-6 -right-6 opacity-60"></i>
-                    <i class="fa-solid fa-folder-open text-5xl text-blue-200 group-hover:text-blue-600 group-hover:scale-110 transition-all duration-500 relative z-10 filter drop-shadow-sm"></i>
+                {{-- PHẦN HIỂN THỊ ẢNH / ICON --}}
+                <div class="h-48 bg-slate-50 flex items-center justify-center relative overflow-hidden flex-shrink-0 group-hover:brightness-95 transition-all">
+                    @if($project->thumbnail)
+                        {{-- TRƯỜNG HỢP 1: Có ảnh thumbnail --}}
+                        <img src="{{ $project->thumbnail_url }}" 
+                             alt="{{ $project->name }}" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        
+                        {{-- Lớp phủ gradient nhẹ để text dễ đọc nếu muốn chèn text lên ảnh sau này --}}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    @else
+                        {{-- TRƯỜNG HỢP 2: Không có ảnh -> Hiển thị Icon mặc định (Giữ nguyên style cũ của bạn) --}}
+                        <div class="absolute inset-0 bg-gradient-to-br from-slate-50 to-blue-50"></div>
+                        <i class="fa-solid fa-folder-open text-9xl text-white absolute -bottom-6 -right-6 opacity-60"></i>
+                        <i class="fa-solid fa-folder-open text-5xl text-blue-200 group-hover:text-blue-600 group-hover:scale-110 transition-all duration-500 relative z-10 filter drop-shadow-sm"></i>
+                    @endif
                 </div>
 
+                {{-- PHẦN NỘI DUNG DƯỚI (Giữ nguyên) --}}
                 <div class="p-6 flex flex-col flex-grow">
                     <div class="flex justify-between items-start mb-3">
                         <span class="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-bold px-2.5 py-1 rounded uppercase tracking-wider">
                             {{ $project->code_number ?? 'DA-MỚI' }}
                         </span>
                         <span class="text-xs text-slate-400 flex items-center">
-                            <i class="fa-regular fa-calendar mr-1.5"></i> {{ date('d/m/Y', strtotime($project->start_date)) }}
+                            <i class="fa-regular fa-calendar mr-1.5"></i> 
+                            {{ is_numeric($project->start_year) ? $project->start_year : date('Y', strtotime($project->created_at)) }}
                         </span>
                     </div>
 
@@ -65,7 +80,8 @@
                     <div class="mt-auto pt-4 border-t border-dashed border-slate-100 flex items-center justify-between">
                         <div class="flex items-center text-xs text-slate-500 font-medium truncate max-w-[75%]">
                             <i class="fa-solid fa-building-columns mr-2 text-slate-400"></i> 
-                            <span class="truncate">{{ $project->implementing_unit->name ?? 'Bộ TN&MT' }}</span>
+                            {{-- Sử dụng Accessor getOwnerNameAttribute đã viết trong Model --}}
+                            <span class="truncate" title="{{ $project->owner_name }}">{{ $project->owner_name }}</span>
                         </div>
                         <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
                             <i class="fa-solid fa-arrow-right text-xs"></i>

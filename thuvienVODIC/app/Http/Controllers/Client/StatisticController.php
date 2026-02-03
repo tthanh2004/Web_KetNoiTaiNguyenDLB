@@ -38,22 +38,17 @@ class StatisticController extends Controller
     public function projects()
     {
         $total = Project::count();
-
         $completed = Project::where('status', 'completed')->count();
         $ongoing = Project::where('status', 'ongoing')->count();
 
+        // Thống kê theo năm (giữ nguyên)
         $projectsByYear = Project::select(DB::raw('YEAR(created_at) as year'), DB::raw('count(*) as count'))
             ->groupBy('year')
             ->orderBy('year', 'desc')
             ->limit(5)
             ->get();
-
-        $fields = [
-            'Địa chất' => Project::where('name', 'like', '%địa chất%')->count(),
-            'Sinh học' => Project::where('name', 'like', '%sinh học%')->orWhere('name', 'like', '%nguồn lợi%')->count(),
-            'Môi trường' => Project::where('name', 'like', '%môi trường%')->count(),
-            'Hải văn' => Project::where('name', 'like', '%hải văn%')->count(),
-        ];
+        // Thống kê theo lĩnh vực
+        $fields = \App\Models\Field::withCount('projects')->get();
 
         return view('client.statistics.projects', compact('total', 'completed', 'ongoing', 'projectsByYear', 'fields'));
     }
@@ -63,25 +58,20 @@ class StatisticController extends Controller
      */
     public function scheme47()
     {
-        // 1. Tìm nhóm dự án "Đề án 47"
-        $group = \App\Models\ProjectGroup::where('name', 'like', '%Đề án 47%')->first();
-        
-        if (!$group) {
-            // Xử lý nếu chưa có nhóm này
-            return view('client.statistics.scheme47', [
-                'total47' => 0, 'percentCompleted' => 0, 'listProjects' => collect(), 'components' => collect()
-            ]);
-        }
+        $group = \App\Models\ProjectGroup::where('name', 'like', '%Đề án 47%')->firstOrFail();
 
         // 2. Query cơ bản
         $query = \App\Models\Project::where('project_group_id', $group->id);
         
         $total47 = $query->count();
-        $percentCompleted = $total47 > 0 ? round($query->avg('progress')) : 0;
+        // Tính % hoàn thành
+        $completedCount = (clone $query)->where('status', 'completed')->count();
+        $percentCompleted = $total47 > 0 ? round(($completedCount / $total47) * 100) : 0;
+        // --------------------
 
-        // 3. Danh sách dự án (SỬA LỖI TẠI ĐÂY)
+        // 3. Danh sách dự án
         $listProjects = $query->with('implementing_unit')
-                              ->orderBy('start_year', 'desc') // <--- Đổi 'start_date' thành 'start_year' hoặc 'created_at'
+                              ->orderBy('start_year', 'desc') 
                               ->get();
 
         // 4. Lấy 4 dự án tiêu biểu làm components
@@ -95,9 +85,17 @@ class StatisticController extends Controller
      */
     public function ministries()
     {
-        $ministries = Ministry::withCount(['projects', 'implementing_units'])
-            ->orderBy('projects_count', 'desc')
+        // Đếm dự án trực tiếp (direct_projects) và gián tiếp (indirect_projects)
+        $ministries = Ministry::withCount(['direct_projects', 'indirect_projects', 'implementing_units'])
             ->get();
+
+        // Cộng dồn tổng số dự án vào một thuộc tính mới để View sử dụng dễ dàng
+        $ministries->each(function($min) {
+            $min->projects_count = $min->direct_projects_count + $min->indirect_projects_count;
+        });
+
+        // Sắp xếp lại collection theo tổng số dự án giảm dần
+        $ministries = $ministries->sortByDesc('projects_count');
 
         return view('client.statistics.ministries', compact('ministries'));
     }

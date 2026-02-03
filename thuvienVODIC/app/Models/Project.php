@@ -12,10 +12,26 @@ use App\Models\Document;
 class Project extends Model
 {
     protected $fillable = [
-        'name', 'code_number', 'library_code', 'thumbnail', 
-        'content', 'note', 'start_year', 'end_year', 'handover_time',
-        'scale', 'budget', 'price', 'cabinet_location', 'data_entry_person',
-        'parent_id', 'project_group_id', 'implementing_unit_id', 'status'
+        'name', 
+        'code_number', 
+        'library_code', 
+        'thumbnail', 
+        'content', 
+        'note', 
+        'start_year', 
+        'end_year', 
+        'handover_time',
+        'scale', 
+        'budget', 
+        'price', 
+        'cabinet_location', 
+        'data_entry_person',
+        'parent_id', 
+        'project_group_id', 
+        'implementing_unit_id', 
+        'ministry_id',
+        'field_id',
+        'status'
     ];
 
     // Quan hệ: Dự án con (Dự án thành phần)
@@ -52,10 +68,33 @@ class Project extends Model
 
     public function getOwnerNameAttribute()
     {
+        // Ưu tiên 1: Nếu là dự án con -> Lấy tên đơn vị thực hiện (vì con gắn với đơn vị)
         if ($this->parent_id) {
-            return $this->implementing_unit->name ?? 'Chưa cập nhật đơn vị';
+            return $this->implementing_unit->name ?? 'Đang cập nhật đơn vị';
         }
-        return $this->ministry->name ?? 'Chưa cập nhật Bộ';
+        
+        // Ưu tiên 2: Nếu là dự án cha -> Lấy tên Bộ chủ quản
+        return $this->ministry->name ?? 'Đang cập nhật Bộ';
+    }
+    // Lấy Bộ chủ quản thực sự của dự án (dù là con hay cha)
+    public function getEffectiveMinistryAttribute()
+    {
+        // Trường hợp 1: Dự án trực thuộc Bộ (Dự án cha)
+        if ($this->ministry_id && $this->ministry) {
+            return $this->ministry;
+        }
+        
+        // Trường hợp 2: Dự án con thuộc Đơn vị -> Lấy bộ của Đơn vị đó
+        if ($this->implementing_unit_id && $this->implementing_unit) {
+            return $this->implementing_unit->ministry;
+        }
+
+        // Trường hợp 3: Fallback qua Parent (nếu dữ liệu cũ chưa chuẩn)
+        if ($this->parent_id && $this->parent) {
+            return $this->parent->effective_ministry; // Đệ quy lấy bộ của cha
+        }
+        
+        return null;
     }
 
     public function ministry()

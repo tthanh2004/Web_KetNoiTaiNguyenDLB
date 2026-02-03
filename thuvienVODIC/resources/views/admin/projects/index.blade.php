@@ -46,18 +46,38 @@
                             </a>
                         </div>
                         
+                        {{-- Hiển thị quan hệ Cha/Con --}}
                         @if($project->parent)
                             <div class="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded inline-flex items-center gap-1 mb-1">
                                 <i class="fa-solid fa-turn-up rotate-90"></i> Con của: {{ Str::limit($project->parent->name, 30) }}
                             </div>
                         @endif
 
-                        <div class="text-xs text-gray-500">
+                        <div class="text-xs text-gray-500 mt-1">
                             <span class="font-semibold text-blue-800">{{ $project->project_group->name ?? '---' }}</span>
                             <span class="mx-1">•</span>
-                            <span>{{ $project->implementing_unit->name ?? '---' }}</span>
+                            <span class="font-medium text-slate-700" title="{{ $project->owner_name }}">
+                                {{ Str::limit($project->owner_name, 40) }}
+                            </span>
                         </div>
                     </td>
+
+                    <div class="text-xs text-gray-500 mt-1 flex flex-wrap gap-2 items-center">
+                        <span class="font-semibold text-blue-800">{{ $project->project_group->name ?? '---' }}</span>
+                        <span class="text-gray-300">|</span>
+                        @if($project->field)
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white shadow-sm" style="background-color: {{ $project->field->color }}">
+                                {{ $project->field->name }}
+                            </span>
+                        @else
+                            <span class="text-gray-400 italic">Chưa phân lĩnh vực</span>
+                        @endif
+
+                        <span class="text-gray-300">•</span>
+                        <span class="font-medium text-slate-700" title="{{ $project->owner_name }}">
+                            {{ Str::limit($project->owner_name, 30) }}
+                        </span>
+                    </div>
 
                     <td class="px-5 py-4 align-top text-sm">
                         <p class="font-mono text-gray-600 bg-gray-100 px-1 rounded inline-block text-xs mb-1">

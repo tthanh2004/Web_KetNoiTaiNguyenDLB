@@ -205,18 +205,47 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     @foreach($project->documents as $doc)
-                                    <tr class="hover:bg-blue-50 transition-colors">
-                                        <td class="px-4 py-3 font-medium text-slate-800">
-                                            <i class="fa-regular fa-file-pdf text-red-500 mr-2 text-lg"></i> {{ $doc->title }}
-                                        </td>
-                                        <td class="px-4 py-3 text-slate-500">{{ $doc->author_org ?? '---' }}</td>
-                                        <td class="px-4 py-3 text-right">
-                                            <a href="{{ Storage::url($doc->file_url) }}" target="_blank" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-bold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded transition-all">
-                                                <i class="fa-solid fa-download"></i> Tải về
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
+                                        @php
+                                            // Lấy phần mở rộng của file để hiển thị icon phù hợp
+                                            $extension = strtolower(pathinfo($doc->file_path, PATHINFO_EXTENSION));
+                                            $fileIcons = [
+                                                'pdf'  => ['icon' => 'fa-file-pdf', 'color' => 'text-red-500', 'bg' => 'bg-red-50'],
+                                                'doc'  => ['icon' => 'fa-file-word', 'color' => 'text-blue-500', 'bg' => 'bg-blue-50'],
+                                                'docx' => ['icon' => 'fa-file-word', 'color' => 'text-blue-500', 'bg' => 'bg-blue-50'],
+                                                'xls'  => ['icon' => 'fa-file-excel', 'color' => 'text-green-600', 'bg' => 'bg-green-50'],
+                                                'xlsx' => ['icon' => 'fa-file-excel', 'color' => 'text-green-600', 'bg' => 'bg-green-50'],
+                                                'zip'  => ['icon' => 'fa-file-zipper', 'color' => 'text-amber-500', 'bg' => 'bg-amber-50'],
+                                                'rar'  => ['icon' => 'fa-file-zipper', 'color' => 'text-amber-500', 'bg' => 'bg-amber-50'],
+                                            ];
+                                            $style = $fileIcons[$extension] ?? ['icon' => 'fa-file-lines', 'color' => 'text-slate-500', 'bg' => 'bg-slate-50'];
+                                        @endphp
+
+                                        <tr class="hover:bg-blue-50/50 transition-colors">
+                                            <td class="px-4 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 {{ $style['bg'] }} {{ $style['color'] }} rounded-lg flex items-center justify-center flex-none shadow-sm border border-white">
+                                                        <i class="fa-regular {{ $style['icon'] }} text-xl"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-bold text-slate-800 line-clamp-1">{{ $doc->title }}</div>
+                                                        <div class="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-2">
+                                                            <span class="px-1.5 py-0.5 rounded border border-slate-200 bg-white">{{ $extension ?: 'FILE' }}</span>
+                                                            <span>{{ $doc->file_size ?? '' }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4 text-slate-500 italic text-sm">
+                                                {{ $doc->author_org ?? 'Đang cập nhật' }}
+                                            </td>
+                                            <td class="px-4 py-4 text-right">
+                                                <a href="{{ route('client.documents.download', $doc->id) }}" 
+                                                class="inline-flex items-center gap-2 bg-slate-800 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow-md">
+                                                    <i class="fa-solid fa-download"></i> Tải tài liệu
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
                                 </tbody>
                             </table>
                         </div>

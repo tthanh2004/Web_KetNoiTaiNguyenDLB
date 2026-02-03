@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('set null');
-                        $table->string('file_path')->nullable(); // Đường dẫn file
+            $table->string('file_path')->nullable(); // Đường dẫn file
             $table->string('type')->nullable();      // Loại file (pdf, docx)
             $table->decimal('size', 10, 2)->nullable(); // Kích thước file
             $table->foreignId('uploaded_by')->nullable()->constrained('users'); // Người upload
