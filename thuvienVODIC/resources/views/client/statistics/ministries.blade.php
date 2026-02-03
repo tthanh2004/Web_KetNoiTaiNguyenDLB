@@ -23,31 +23,47 @@
                         $percent = $max > 0 ? ($min->projects_count / $max) * 100 : 0;
                     @endphp
 
-                    <div class="bg-white rounded-xl shadow-sm border border-{{$color}}-200 p-6 relative overflow-hidden group hover:shadow-md transition-all">
+                    {{-- === THAY ĐỔI TẠI ĐÂY === --}}
+                    {{-- 1. Chuyển thẻ div thành thẻ a --}}
+                    {{-- 2. Thêm href trỏ về trang danh sách dự án kèm tham số ministry_id --}}
+                    <a href="{{ route('client.projects.index', ['ministry_id' => $min->id]) }}" 
+                       class="block bg-white rounded-xl shadow-sm border border-{{$color}}-200 p-6 relative overflow-hidden group hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                        
                         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <i class="fa-solid fa-building-columns text-6xl text-{{$color}}-900"></i>
                         </div>
+
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-12 h-12 rounded-full bg-{{$color}}-100 flex items-center justify-center text-{{$color}}-700 text-xl font-bold">
                                 {{ $min->code ?? substr($min->name, 0, 1) }}
                             </div>
-                            <h3 class="font-bold text-slate-800 text-lg line-clamp-2 h-14" title="{{ $min->name }}">
+                            <h3 class="font-bold text-slate-800 text-lg line-clamp-2 h-14 group-hover:text-{{$color}}-700 transition-colors" title="{{ $min->name }}">
                                 {{ $min->name }}
                             </h3>
                         </div>
+
                         <div class="space-y-3">
                             <div class="flex justify-between text-sm">
                                 <span class="text-slate-500">Số lượng dự án</span>
                                 <span class="font-bold text-{{$color}}-700">{{ $min->projects_count }}</span>
                             </div>
+                            
                             <div class="w-full bg-slate-100 rounded-full h-2">
                                 <div class="bg-{{$color}}-600 h-2 rounded-full" style="width: {{ $percent }}%"></div>
                             </div>
-                            <p class="text-xs text-slate-400 mt-2">
-                                {{ $min->implementing_units_count }} đơn vị trực thuộc.
-                            </p>
+                            
+                            <div class="flex justify-between items-end mt-2">
+                                <p class="text-xs text-slate-400">
+                                    {{ $min->implementing_units_count }} đơn vị trực thuộc.
+                                </p>
+                                
+                                {{-- Thêm icon mũi tên nhỏ để người dùng biết là click được --}}
+                                <span class="text-xs font-bold text-{{$color}}-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                    Xem chi tiết <i class="fa-solid fa-arrow-right"></i>
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         @else

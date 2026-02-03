@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
-use App\Models\ProjectGroup; // Đừng quên import Model này
+use App\Models\ProjectGroup;
 
 class ProjectController extends Controller
 {
@@ -14,44 +14,73 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Khởi tạo query
-        $query = Project::query()->with('implementing_unit');
+        // 1. Khởi tạo query và Eager Load
+        $query = Project::query()->with(['implementing_unit', 'ministry', 'project_group']);
 
-        // 2. Logic Lọc theo từ khóa (Tên, Mã số, Nội dung)
+        // --- CÁC BỘ LỌC MỚI (THÊM VÀO ĐÂY) ---
+
+        // Lọc theo Bộ ngành
+        if ($request->filled('ministry_id')) {
+            // Tìm các dự án có ministry_id trực tiếp HOẶC đơn vị thực hiện thuộc ministry_id đó
+            $minId = $request->ministry_id;
+            $query->where(function($q) use ($minId) {
+                $q->where('ministry_id', $minId)
+                ->orWhereHas('implementing_unit', function($subQ) use ($minId) {
+                    $subQ->where('ministry_id', $minId);
+                });
+            });
+        }
+
+        // Lọc theo Đơn vị thực hiện
+        if ($request->filled('unit_id')) {
+            $query->where('implementing_unit_id', $request->unit_id);
+        }
+
+        // Lọc theo Trạng thái (completed, ongoing...)
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Lọc theo Năm bắt đầu
+        if ($request->filled('year')) {
+            $query->where('start_year', $request->year);
+        }
+
+        // --- GIỮ NGUYÊN CÁC LOGIC CŨ ---
+        
+        // Lọc từ khóa
         if ($request->filled('keyword')) {
             $keyword = $request->keyword;
             $query->where(function($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
-                  ->orWhere('code_number', 'like', "%{$keyword}%")
-                  ->orWhere('content', 'like', "%{$keyword}%");
+                ->orWhere('code_number', 'like', "%{$keyword}%")
+                ->orWhere('content', 'like', "%{$keyword}%");
             });
         }
 
-        // 3. Logic Lọc theo Nhóm dự án (Dropdown)
+        // Lọc Nhóm dự án
         if ($request->filled('group_id')) {
             $query->where('project_group_id', $request->group_id);
         }
 
-        // 4. Logic Sắp xếp
-        if ($request->sort == 'newest') {
-            $query->orderBy('start_date', 'desc');
-        } elseif ($request->sort == 'oldest') {
-            $query->orderBy('start_date', 'asc');
+        // Sắp xếp
+        if ($request->sort == 'oldest') {
+            $query->orderBy('start_year', 'asc'); // Nhớ sửa thành start_year
         } elseif ($request->sort == 'name_asc') {
             $query->orderBy('name', 'asc');
         } else {
-            // Mặc định: Mới nhất trước
-            $query->orderBy('start_date', 'desc');
+            $query->orderBy('created_at', 'desc'); // Mặc định
         }
 
-        // 5. Phân trang (10 dự án mỗi trang)
         $projects = $query->paginate(10);
-
-        // 6. Lấy danh sách nhóm dự án để hiển thị vào Select Box lọc
         $projectGroups = ProjectGroup::all(); 
 
-        // 7. Trả về View
-        return view('client.projects.index', compact('projects', 'projectGroups'));
+        // Truyền thêm biến hiển thị thông báo đang lọc
+        $filterTitle = '';
+        if($request->ministry_id) $filterTitle = 'Thuộc Bộ: ' . \App\Models\Ministry::find($request->ministry_id)->name ?? '';
+        if($request->unit_id) $filterTitle = 'Đơn vị: ' . \App\Models\ImplementingUnit::find($request->unit_id)->name ?? '';
+
+        return view('client.projects.index', compact('projects', 'projectGroups', 'filterTitle'));
     }
 
     /**
@@ -59,9 +88,15 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        // Eager load các quan hệ để hiển thị trong trang chi tiết
-        $project = Project::with(['documents', 'implementing_unit', 'project_group', 'children', 'parent'])
-                          ->findOrFail($id);
+        // Eager load: Thêm 'ministry' vào đây nữa
+        $project = Project::with([
+            'documents', 
+            'implementing_unit', 
+            'ministry',
+            'project_group', 
+            'children', 
+            'parent'
+        ])->findOrFail($id);
 
         return view('client.projects.show', compact('project'));
     }

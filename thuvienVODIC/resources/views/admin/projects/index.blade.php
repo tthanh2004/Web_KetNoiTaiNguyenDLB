@@ -4,7 +4,7 @@
 <div class="flex justify-between items-center mb-6">
     <div>
         <h1 class="text-2xl font-bold text-gray-800">Danh sách Dự án</h1>
-        <p class="text-sm text-gray-500">Quản lý tiến độ và trạng thái các nhiệm vụ</p>
+        <p class="text-sm text-gray-500">Quản lý toàn bộ hồ sơ dự án, đề án</p>
     </div>
     <a href="{{ route('admin.projects.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition-colors">
         <i class="fa-solid fa-plus mr-1"></i> Thêm mới
@@ -14,90 +14,86 @@
 <div class="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full leading-normal">
-            <thead class="bg-gray-50 border-b border-gray-200">
-                <tr>
-                    <th class="px-5 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/4">Dự án / Mã số</th>
-                    <th class="px-5 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Đơn vị & Nhóm</th>
-                    <th class="px-5 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                    <th class="px-5 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/6">Tiến độ</th>
-                    <th class="px-5 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Hành động</th>
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <th class="px-5 py-3 w-16">Ảnh</th>
+                    <th class="px-5 py-3">Tên Dự án / Nhóm</th>
+                    <th class="px-5 py-3">Mã & Thời gian</th>
+                    <th class="px-5 py-3">Lưu trữ & Giá</th>
+                    <th class="px-5 py-3 text-center w-32">Hành động</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @foreach($projects as $project)
                 <tr class="hover:bg-gray-50 transition-colors">
                     
-                    <td class="px-5 py-4 bg-white text-sm">
-                        <div class="flex items-center">
-                            <div>
-                                <p class="text-gray-900 font-bold line-clamp-2" title="{{ $project->name }}">
-                                    {{ $project->name }}
-                                </p>
-                                <p class="text-gray-500 text-xs mt-1 font-mono bg-gray-100 inline-block px-1 rounded">
-                                    {{ $project->code_number ?? 'Chưa có mã' }}
-                                </p>
-                            </div>
+                    <td class="px-5 py-4 align-top">
+                        <div class="flex-shrink-0 w-12 h-12">
+                            @if($project->thumbnail)
+                                <img class="w-full h-full rounded object-cover border border-gray-200" src="{{ asset($project->thumbnail) }}" alt="">
+                            @else
+                                <div class="w-full h-full rounded bg-gray-100 flex items-center justify-center text-gray-400 border border-gray-200">
+                                    <i class="fa-solid fa-image"></i>
+                                </div>
+                            @endif
                         </div>
                     </td>
 
-                    <td class="px-5 py-4 bg-white text-sm">
-                        <p class="text-gray-700 font-medium mb-1">
-                            <i class="fa-solid fa-building-columns text-gray-400 mr-1"></i>
-                            {{ $project->implementing_unit->name ?? '---' }}
-                        </p>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                            {{ $project->project_group->name ?? '---' }}
-                        </span>
+                    <td class="px-5 py-4 align-top">
+                        <div class="mb-1">
+                            <a href="{{ route('admin.projects.edit', $project->id) }}" class="text-gray-900 font-bold hover:text-blue-600 text-sm line-clamp-2">
+                                {{ $project->name }}
+                            </a>
+                        </div>
+                        
+                        @if($project->parent)
+                            <div class="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded inline-flex items-center gap-1 mb-1">
+                                <i class="fa-solid fa-turn-up rotate-90"></i> Con của: {{ Str::limit($project->parent->name, 30) }}
+                            </div>
+                        @endif
+
+                        <div class="text-xs text-gray-500">
+                            <span class="font-semibold text-blue-800">{{ $project->project_group->name ?? '---' }}</span>
+                            <span class="mx-1">•</span>
+                            <span>{{ $project->implementing_unit->name ?? '---' }}</span>
+                        </div>
                     </td>
 
-                    <td class="px-5 py-4 bg-white text-sm">
-                        @php
-                            $statusClasses = [
-                                'new' => 'bg-gray-100 text-gray-600 border-gray-200',
-                                'ongoing' => 'bg-blue-100 text-blue-700 border-blue-200',
-                                'paused' => 'bg-orange-100 text-orange-700 border-orange-200',
-                                'completed' => 'bg-green-100 text-green-700 border-green-200',
-                            ];
-                            $statusLabels = [
-                                'new' => 'Mới khởi tạo',
-                                'ongoing' => 'Đang thực hiện',
-                                'paused' => 'Tạm dừng',
-                                'completed' => 'Hoàn thành',
-                            ];
-                            $currentStatus = $project->status ?? 'new';
-                        @endphp
-                        
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border {{ $statusClasses[$currentStatus] }}">
-                            {{ $statusLabels[$currentStatus] }}
-                        </span>
+                    <td class="px-5 py-4 align-top text-sm">
+                        <p class="font-mono text-gray-600 bg-gray-100 px-1 rounded inline-block text-xs mb-1">
+                            {{ $project->code_number ?? 'Chưa có mã' }}
+                        </p>
+                        <p class="text-gray-500 text-xs">
+                            <i class="fa-regular fa-calendar mr-1"></i>
+                            {{ $project->start_year ?? '?' }} - {{ $project->end_year ?? '?' }}
+                        </p>
+                    </td>
 
-                        @if($project->status == 'completed' && $project->completed_at)
-                            <div class="text-xs text-gray-400 mt-1">
-                                <i class="fa-regular fa-clock"></i> {{ $project->completed_at->format('d/m/Y') }}
+                    <td class="px-5 py-4 align-top text-sm">
+                        <div class="mb-1 text-xs">
+                            <span class="text-gray-500">Kho:</span> 
+                            <span class="font-bold text-gray-700">{{ $project->library_code ?? '---' }}</span>
+                        </div>
+                        <div class="mb-1 text-xs text-red-600 font-medium" title="Vị trí tủ">
+                            <i class="fa-solid fa-box-archive mr-1"></i> {{ $project->cabinet_location ?? '---' }}
+                        </div>
+                        @if($project->price)
+                            <div class="text-xs text-green-700 font-bold">
+                                {{ number_format($project->price) }} đ
                             </div>
                         @endif
                     </td>
 
-                    <td class="px-5 py-4 bg-white text-sm align-middle">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-semibold text-gray-600">{{ $project->progress }}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="h-2 rounded-full {{ $project->progress == 100 ? 'bg-green-500' : ($project->progress > 50 ? 'bg-blue-500' : 'bg-blue-400') }}" 
-                                 style="width: {{ $project->progress }}%"></div>
-                        </div>
-                    </td>
-
-                    <td class="px-5 py-4 bg-white text-sm text-center whitespace-nowrap">
+                    <td class="px-5 py-4 align-middle text-center whitespace-nowrap">
                         <div class="flex justify-center items-center gap-2">
-                            <a href="{{ route('admin.projects.edit', $project->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Sửa tiến độ">
+                            <a href="{{ route('admin.projects.edit', $project->id) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Sửa">
                                 <i class="fa-solid fa-pen-to-square text-lg"></i>
                             </a>
                             
-                            <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" class="inline-block" onsubmit="return confirm('CẢNH BÁO: Xóa dự án này sẽ xóa toàn bộ tài liệu liên quan!\nBạn có chắc chắn không?');">
+                            <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa dự án này không?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded transition-colors" title="Xóa dự án">
+                                <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded transition-colors" title="Xóa">
                                     <i class="fa-solid fa-trash text-lg"></i>
                                 </button>
                             </form>

@@ -63,33 +63,30 @@ class StatisticController extends Controller
      */
     public function scheme47()
     {
-        // 1. Tìm ID của nhóm "Đề án 47"
+        // 1. Tìm nhóm dự án "Đề án 47"
         $group = \App\Models\ProjectGroup::where('name', 'like', '%Đề án 47%')->first();
-
-        if ($group) {
-            // Lọc theo ID nhóm nếu tìm thấy
-            $query = Project::where('project_group_id', $group->id);
-        } else {
-            // Fallback: Lọc theo tên nếu chưa có nhóm
-            $query = Project::where('name', 'like', '%Đề án 47%')
-                            ->orWhere('code_number', 'like', '%DA47%');
+        
+        if (!$group) {
+            // Xử lý nếu chưa có nhóm này
+            return view('client.statistics.scheme47', [
+                'total47' => 0, 'percentCompleted' => 0, 'listProjects' => collect(), 'components' => collect()
+            ]);
         }
 
-        // 2. Số liệu thống kê
-        $total47 = $query->count();
+        // 2. Query cơ bản
+        $query = \App\Models\Project::where('project_group_id', $group->id);
         
-        // Tính % hoàn thành trung bình
+        $total47 = $query->count();
         $percentCompleted = $total47 > 0 ? round($query->avg('progress')) : 0;
 
-        // 3. Danh sách dự án
+        // 3. Danh sách dự án (SỬA LỖI TẠI ĐÂY)
         $listProjects = $query->with('implementing_unit')
-                              ->orderBy('start_date', 'desc')
+                              ->orderBy('start_year', 'desc') // <--- Đổi 'start_date' thành 'start_year' hoặc 'created_at'
                               ->get();
 
-        // 4. KHÔI PHỤC BIẾN $components (Đây là phần bị thiếu gây ra lỗi)
+        // 4. Lấy 4 dự án tiêu biểu làm components
         $components = $listProjects->take(4);
 
-        // Truyền đầy đủ biến sang View
         return view('client.statistics.scheme47', compact('total47', 'percentCompleted', 'listProjects', 'components'));
     }
 

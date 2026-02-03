@@ -14,7 +14,7 @@ class HomeController extends Controller
     {
         // Lấy 6 dự án mới nhất để hiển thị
         $projects = Project::with('implementing_unit')
-                           ->orderBy('start_date', 'desc')
+                           ->orderBy('created_at', 'desc')
                            ->take(6)
                            ->get();
 

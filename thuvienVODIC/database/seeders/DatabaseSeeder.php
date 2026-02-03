@@ -24,15 +24,11 @@ class DatabaseSeeder extends Seeder
         // 2. Tạo Bộ ngành mẫu
         $ministry = Ministry::create(['name' => 'Bộ Tài nguyên và Môi trường', 'code' => 'BTNMT']);
 
-        // 3. Tạo Đơn vị mẫu
-        ImplementingUnit::create(['name' => 'Viện Hải dương học', 'ministry_id' => $ministry->id]);
-        ImplementingUnit::create(['name' => 'Cục Biển và Hải đảo', 'ministry_id' => $ministry->id]);
 
         // 4. Tạo Nhóm dự án mẫu
-        ProjectGroup::create(['name' => 'Nhiệm vụ thường xuyên']);
         ProjectGroup::create(['name' => 'Đề án 47']);
 
         // 5. Tạo Nhóm phí mẫu
-        FeeCategory::create(['name' => 'I. Dữ liệu Tài nguyên đất', 'order' => 1]);
+        FeeCategory::create(['name' => 'Dữ liệu Tài nguyên đất', 'order' => 1]);
     }
 }
