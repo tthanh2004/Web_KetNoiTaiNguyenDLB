@@ -8,11 +8,11 @@ class Document extends Model
 {
     protected $fillable = [
         'title', 
-        'author_org', 
-        'file_url', 
+        'project_id', 
+        'file_path', 
         'type', 
-        'user_id', // Admin upload
-        'project_id'
+        'size',
+        'uploaded_by'
     ];
 
     public function project() {

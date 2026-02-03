@@ -27,6 +27,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('implementing_units');
-        $table->unsignedBigInteger('ministry_id')->nullable(false)->change();
     }
 };

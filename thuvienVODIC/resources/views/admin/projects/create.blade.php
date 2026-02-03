@@ -174,7 +174,7 @@
             // LÀ DỰ ÁN CHA: Hiện Bộ, Ẩn Đơn vị
             ministryWrapper.classList.remove('hidden');
             ministrySelect.disabled = false;
-            ministrySelect.required = true;
+            ministrySelect.required = false;
 
             unitWrapper.classList.add('hidden');
             unitSelect.disabled = true;

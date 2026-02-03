@@ -14,7 +14,6 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        // Load các quan hệ: Nhóm, Đơn vị, Bộ, Dự án Cha
         $projects = Project::with(['project_group', 'implementing_unit', 'ministry', 'parent'])
                            ->orderBy('id', 'desc')
                            ->paginate(10);
@@ -27,28 +26,11 @@ class ProjectController extends Controller
         $groups = ProjectGroup::all();
         $units = ImplementingUnit::all();
         
-        // Lấy danh sách dự án cha
         $parents = Project::select('id', 'name', 'code_number')
                           ->orderBy('created_at', 'desc')
                           ->get();
 
         return view('admin.projects.create', compact('groups', 'units', 'parents', 'ministries'));
-    }
-    public function edit($id)
-    {
-        $project = Project::with('children')->findOrFail($id);
-        
-        $ministries = Ministry::all();
-        $groups = ProjectGroup::all();
-        $units = ImplementingUnit::all();
-        
-        // Lấy danh sách cha (Trừ chính nó để tránh vòng lặp)
-        $parents = Project::where('id', '!=', $id)
-                          ->select('id', 'name', 'code_number')
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-
-        return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries'));
     }
 
     public function store(Request $request)
@@ -56,35 +38,38 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required',
             'project_group_id' => 'required',
-            'ministry_id' => 'required_without:parent_id',
+            
+            // --- SỬA: Cho phép null, không bắt buộc nữa ---
+            'ministry_id' => 'nullable', 
+            
             'implementing_unit_id' => 'required_with:parent_id',
             'thumbnail' => 'nullable|image|max:5120',
             'start_year' => 'nullable|integer',
+        ], [
+            // Bạn có thể bỏ thông báo lỗi tùy chỉnh cho ministry_id vì nó không còn required
+            'implementing_unit_id.required_with' => 'Vui lòng chọn Đơn vị thực hiện (đối với dự án thành phần).',
         ]);
 
         $data = $request->all();
 
         // 1. Logic Cha/Con
         if ($request->filled('parent_id')) {
+            // LÀ CON: Bộ phải null
             $data['ministry_id'] = null;
         } else {
+            // LÀ CHA: Đơn vị và Parent phải null
             $data['implementing_unit_id'] = null;
             $data['parent_id'] = null;
+            // ministry_id sẽ lấy giá trị từ request (có thể là ID hoặc null nếu không chọn)
         }
 
-        // 2. Xử lý upload ảnh (QUAN TRỌNG: Thêm tham số 'public')
+        // 2. Xử lý upload ảnh
         if ($request->hasFile('thumbnail')) {
             $file = $request->file('thumbnail');
-            
-            // Làm sạch tên file
             $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
             $filename = time() . '_' . $cleanName;
             
-            // Lưu vào disk 'public', folder 'projects'
-            // Kết quả file nằm ở: storage/app/public/projects/ten-file.png
             $file->storeAs('projects', $filename, 'public');
-            
-            // Lưu đường dẫn DB (để asset() đọc được từ folder public/storage)
             $data['thumbnail'] = 'storage/projects/' . $filename;
         }
 
@@ -94,6 +79,22 @@ class ProjectController extends Controller
         return redirect()->route('admin.projects.index')->with('success', 'Thêm dự án thành công');
     }
 
+    public function edit($id)
+    {
+        $project = Project::with('children')->findOrFail($id);
+        
+        $ministries = Ministry::all();
+        $groups = ProjectGroup::all();
+        $units = ImplementingUnit::all();
+        
+        $parents = Project::where('id', '!=', $id)
+                          ->select('id', 'name', 'code_number')
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+
+        return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries'));
+    }
+
     public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
@@ -101,7 +102,10 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required',
             'project_group_id' => 'required',
-            'ministry_id' => 'required_without:parent_id',
+            
+            // --- SỬA: Cho phép null ---
+            'ministry_id' => 'nullable',
+            
             'implementing_unit_id' => 'required_with:parent_id',
             'thumbnail' => 'nullable|image|max:5120',
         ]);
@@ -118,9 +122,7 @@ class ProjectController extends Controller
 
         // 2. Xử lý ảnh
         if ($request->hasFile('thumbnail')) {
-            // Xóa ảnh cũ
             if ($project->thumbnail) {
-                // Chuyển 'storage/projects/abc.jpg' thành 'projects/abc.jpg' để xóa trong disk public
                 $oldFile = str_replace('storage/', '', $project->thumbnail);
                 Storage::disk('public')->delete($oldFile);
             }
@@ -129,9 +131,7 @@ class ProjectController extends Controller
             $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
             $filename = time() . '_' . $cleanName;
             
-            // Lưu file mới vào disk public
             $file->storeAs('projects', $filename, 'public');
-            
             $data['thumbnail'] = 'storage/projects/' . $filename;
         }
 
@@ -144,8 +144,8 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         if ($project->thumbnail) {
-             $oldPath = str_replace('storage/', 'public/', $project->thumbnail);
-             if (Storage::exists($oldPath)) Storage::delete($oldPath);
+             $oldFile = str_replace('storage/', '', $project->thumbnail);
+             Storage::disk('public')->delete($oldFile);
         }
         $project->delete();
         

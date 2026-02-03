@@ -6,102 +6,119 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\Project;
-use Illuminate\Support\Facades\Storage; // Nhớ import thư viện này
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
-    // Hiển thị form upload
     public function index()
     {
-        // Lấy danh sách tài liệu mới nhất
-        $documents = Document::with('project')->orderBy('id', 'desc')->paginate(10);
+        $documents = Document::with('project', 'uploader')->orderBy('id', 'desc')->paginate(10);
         return view('admin.documents.index', compact('documents'));
     }
 
     public function create()
     {
-        $projects = Project::all();
+        $projects = Project::select('id', 'name', 'code_number')->orderBy('created_at', 'desc')->get();
         return view('admin.documents.create', compact('projects'));
     }
 
-    // XỬ LÝ LƯU FILE (Quan trọng)
     public function store(Request $request)
     {
-        // 1. Validate dữ liệu
         $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'title' => 'required|string|max:255',
-            'author_org' => 'nullable|string|max:255',
-            
-            // Lỗi của bạn nằm ở đây: Phải validate đúng tên "file_url" như bên Form
-            'file_url' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:20480', // Max 20MB
-        ], [
-            'file_url.required' => 'Vui lòng chọn file tài liệu.',
-            'file_url.mimes' => 'Định dạng file không hỗ trợ (chỉ nhận PDF, Office).',
-            'file_url.max' => 'File quá lớn (tối đa 20MB).',
+            'title' => 'required|max:255',
+            'project_id' => 'nullable|exists:projects,id',
+            'file_path' => 'required|file|max:51200', // Max 50MB
         ]);
 
-        // 2. Xử lý Upload File
-        if ($request->hasFile('file_url')) {
-            $file = $request->file('file_url');
+        $data = $request->all();
+
+        if ($request->hasFile('file_path')) {
+            $file = $request->file('file_path');
             
-            // Lấy tên gốc của file
-            $originalName = $file->getClientOriginalName();
-            // Lấy đuôi file (pdf, docx...)
-            $extension = $file->getClientOriginalExtension();
+            // 1. Làm sạch tên file (chỉ giữ lại chữ cái, số, gạch ngang, chấm)
+            $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_' . $cleanName;
             
-            // Tạo tên file mới để tránh trùng: timestamp_tengoc
-            $fileName = time() . '_' . $originalName;
+            // 2. Lưu file vào storage/app/public/documents
+            $file->storeAs('documents', $filename, 'public');
             
-            // Lưu file vào thư mục: storage/app/public/documents
-            $path = $file->storeAs('public/documents', $fileName);
-            
-            // Đường dẫn để lưu vào DB (bỏ chữ public/ đi để link được)
-            $dbPath = 'storage/documents/' . $fileName;
+            // 3. Lưu thông tin vào mảng data
+            $data['file_path'] = 'documents/' . $filename;
+            $data['type'] = $file->getClientOriginalExtension();
+            $data['size'] = round($file->getSize() / 1024, 2); // KB
         }
 
-        // 3. Lưu vào Database
-        Document::create([
-            'project_id' => $request->project_id,
-            'title' => $request->title,
-            'author_org' => $request->author_org,
-            'file_url' => $dbPath ?? null, // Lưu đường dẫn
-            'type' => $extension ?? 'file',
-            'user_id' => auth()->id(), // Người đang đăng nhập
+        $data['uploaded_by'] = auth()->id() ?? null;
+
+        Document::create($data);
+
+        return redirect()->route('admin.documents.index')->with('success', 'Upload tài liệu thành công!');
+    }
+
+    public function edit($id)
+    {
+        $document = Document::findOrFail($id);
+        $projects = Project::select('id', 'name', 'code_number')->orderBy('created_at', 'desc')->get();
+        return view('admin.documents.edit', compact('document', 'projects'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $document = Document::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|max:255',
+            'project_id' => 'nullable|exists:projects,id',
+            'file_path' => 'nullable|file|max:51200', // Nullable khi update
         ]);
 
-        return redirect()->route('admin.documents.index')
-                         ->with('success', 'Upload tài liệu thành công!');
+        $document->title = $request->title;
+        $document->project_id = $request->project_id;
+
+        if ($request->hasFile('file_path')) {
+            // Xóa file cũ
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
+            }
+
+            // Upload file mới
+            $file = $request->file('file_path');
+            $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_' . $cleanName;
+            
+            $file->storeAs('documents', $filename, 'public');
+            
+            $document->file_path = 'documents/' . $filename;
+            $document->type = $file->getClientOriginalExtension();
+            $document->size = round($file->getSize() / 1024, 2);
+        }
+
+        $document->save();
+
+        return redirect()->route('admin.documents.index')->with('success', 'Cập nhật tài liệu thành công!');
     }
-    
-    // Hàm xóa tài liệu (kèm xóa file trong ổ cứng)
+
     public function destroy($id)
     {
         $document = Document::findOrFail($id);
-        $filePath = str_replace('storage/', 'public/', $document->file_url);
         
-        if(Storage::exists($filePath)){
-            Storage::delete($filePath);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
-
+        
         $document->delete();
 
-        return redirect()->route('admin.documents.index')
-                         ->with('success', 'Đã xóa tài liệu!');
+        return redirect()->back()->with('success', 'Đã xóa tài liệu!');
     }
-
 
     public function download($id)
     {
         $document = Document::findOrFail($id);
-        $filePath = str_replace('storage/', 'public/', $document->file_url);
-
-        if (Storage::exists($filePath)) {
-            $downloadName = \Illuminate\Support\Str::slug($document->title) . '.' . $document->type;
-            
-            return Storage::download($filePath, $downloadName);
+        
+        if (!$document->file_path || !Storage::disk('public')->exists($document->file_path)) {
+            return redirect()->back()->with('error', 'File không tồn tại trên hệ thống!');
         }
 
-        return back()->with('error', 'File không tồn tại trên hệ thống!');
+        return Storage::disk('public')->download($document->file_path, $document->title . '.' . $document->type);
     }
 }

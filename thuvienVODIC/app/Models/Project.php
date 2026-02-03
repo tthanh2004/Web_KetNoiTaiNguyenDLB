@@ -77,7 +77,6 @@ class Project extends Model
         // Xử lý đường dẫn storage
         $path = $this->thumbnail;
         
-        // Fix lỗi đường dẫn cũ 'public/projects/...'
         if (strpos($path, 'public/') === 0) {
             $path = str_replace('public/', 'storage/', $path);
         }
@@ -87,8 +86,6 @@ class Project extends Model
             $path = 'storage/' . $path;
         }
 
-        // SỬA QUAN TRỌNG: Mã hóa đường dẫn để xử lý khoảng trắng
-        // asset() tạo ra URL đầy đủ, ta dùng str_replace để encode khoảng trắng
         return str_replace(' ', '%20', asset($path));
     }
 }

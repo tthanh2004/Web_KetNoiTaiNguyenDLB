@@ -11,7 +11,7 @@
 
     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('PUT') {{-- Bắt buộc phải có dòng này để Laravel hiểu là Update --}}
+        @method('PUT')
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-1">Thuộc Dự án nào? <span class="text-red-500">*</span></label>
@@ -26,20 +26,24 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-1">Tên sản phẩm <span class="text-red-500">*</span></label>
-            <input type="text" name="name" value="{{ $product->name }}" required class="w-full border p-2 rounded" placeholder="VD: Bản đồ địa hình...">
+            <input type="text" name="name" value="{{ $product->name }}" required class="w-full border p-2 rounded">
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh minh họa mới (Nếu muốn thay)</label>
-                <input type="file" name="thumbnail" accept="image/*" class="w-full border p-1 rounded bg-gray-50">
-                
-                @if($product->thumbnail)
-                    <div class="mt-2">
-                        <p class="text-xs text-gray-500 mb-1">Ảnh hiện tại:</p>
-                        <img src="{{ asset($product->thumbnail) }}" class="h-20 w-auto rounded border border-gray-300">
-                    </div>
-                @endif
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh minh họa</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 h-48 flex items-center justify-center relative hover:bg-gray-50 transition-colors">
+                <input type="file" name="thumbnail" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)">
+                <div id="imgPreview" class="w-full h-full flex items-center justify-center">
+                    @if($product->thumbnail)
+                        {{-- Dùng thumbnail_url từ Model --}}
+                        <img src="{{ $product->thumbnail_url }}" class="w-full h-full object-contain rounded">
+                    @else
+                        <div class="text-gray-400 flex flex-col items-center">
+                            <i class="fa-regular fa-image text-3xl mb-1"></i>
+                            <span class="text-xs">Chưa có ảnh</span>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -55,4 +59,17 @@
         </div>
     </form>
 </div>
+
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('imgPreview');
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded">`;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection

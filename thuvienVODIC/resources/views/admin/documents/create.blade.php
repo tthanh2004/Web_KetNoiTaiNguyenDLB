@@ -41,7 +41,7 @@
 
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-1">Chọn file từ máy tính (PDF, Word, Excel...) <span class="text-red-500">*</span></label>
-            <input type="file" name="file_url" required class="w-full text-sm text-slate-500
+            <input type="file" name="file_path" required class="w-full text-sm text-slate-500
               file:mr-4 file:py-2 file:px-4
               file:rounded-full file:border-0
               file:text-sm file:font-semibold

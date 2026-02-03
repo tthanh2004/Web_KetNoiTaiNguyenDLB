@@ -13,18 +13,12 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Tên tài liệu
-            $table->string('author_org')->nullable(); // Tác giả
-            $table->string('file_url'); // Link file
-            $table->string('type')->nullable(); // Loại file
-            
-            // --- CÁC KHÓA NGOẠI ---
-            
-            // 1. Admin nào upload tài liệu này? (MỚI THÊM)
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-            
-            // 2. Thuộc dự án nào? (Quan trọng)
-            $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
+            $table->string('title');
+            $table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('set null');
+                        $table->string('file_path')->nullable(); // Đường dẫn file
+            $table->string('type')->nullable();      // Loại file (pdf, docx)
+            $table->decimal('size', 10, 2)->nullable(); // Kích thước file
+            $table->foreignId('uploaded_by')->nullable()->constrained('users'); // Người upload
             
             $table->timestamps();
         });

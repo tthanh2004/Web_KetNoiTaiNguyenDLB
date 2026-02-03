@@ -43,13 +43,18 @@
                     @endif
                 </td>
                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-center">
-                    <form action="{{ route('admin.documents.destroy', $doc->id) }}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn xóa tài liệu này? File gốc cũng sẽ bị xóa khỏi ổ cứng!');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 p-2 rounded-full transition">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </form>
+                    <div class="flex items-center justify-center space-x-3">
+                        <a href="{{ route('admin.documents.edit', $doc->id) }}" class="text-blue-600 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 p-2 rounded-full transition" title="Chỉnh sửa">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <form action="{{ route('admin.documents.destroy', $doc->id) }}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn xóa tài liệu này?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 p-2 rounded-full transition" title="Xóa">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             @endforeach

@@ -21,19 +21,23 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-1">Tên sản phẩm <span class="text-red-500">*</span></label>
-            <input type="text" name="name" required class="w-full border p-2 rounded" placeholder="VD: Bản đồ địa hình tỉ lệ 1:50000...">
+            <input type="text" name="name" required class="w-full border p-2 rounded" placeholder="VD: Bản đồ địa hình...">
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh minh họa (Thumbnail)</label>
-                <input type="file" name="thumbnail" accept="image/*" class="w-full border p-1 rounded bg-gray-50">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh minh họa</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 h-48 flex items-center justify-center relative hover:bg-gray-50 transition-colors">
+                <input type="file" name="thumbnail" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)">
+                <div id="imgPreview" class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                    <i class="fa-regular fa-image text-4xl mb-2"></i>
+                    <span class="text-sm">Nhấn để tải ảnh</span>
+                </div>
             </div>
         </div>
 
         <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả chi tiết</label>
-            <textarea name="description" rows="4" class="w-full border p-2 rounded" placeholder="Mô tả về quy cách, định dạng, hệ tọa độ..."></textarea>
+            <textarea name="description" rows="4" class="w-full border p-2 rounded"></textarea>
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t">
@@ -44,4 +48,17 @@
         </div>
     </form>
 </div>
+
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('imgPreview');
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded">`;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endsection
