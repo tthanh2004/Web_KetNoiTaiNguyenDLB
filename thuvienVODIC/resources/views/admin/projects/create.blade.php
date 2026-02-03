@@ -33,7 +33,7 @@
                         <option value="">-- Không (Đây là Dự án Lớn / Cấp Bộ) --</option>
                         @foreach($parents as $p)
                             <option value="{{ $p->id }}" 
-                                {{-- LOGIC QUAN TRỌNG: Kiểm tra Old input trước, nếu không có thì kiểm tra URL --}}
+                                {{-- LOGIC QUAN TRỌNG: Tự động chọn cha nếu có request('parent_id') từ URL --}}
                                 {{ (old('parent_id') ?? request('parent_id')) == $p->id ? 'selected' : '' }}>
                                 {{ $p->name }} ({{ $p->code_number }})
                             </option>
@@ -69,6 +69,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="md:col-span-9 grid grid-cols-2 gap-4">
                 <div class="col-span-2">
                     <label class="block text-sm font-bold text-gray-700 mb-1">Tên Dự án <span class="text-red-500">*</span></label>
@@ -114,7 +115,7 @@
             </div>
         </div>
 
-        {{-- PHẦN 3: THÔNG TIN KHÁC --}}
+        {{-- PHẦN 3: THÔNG TIN KHÁC (Giữ nguyên form cũ) --}}
         <h3 class="text-lg font-bold text-blue-800 mb-4 border-b pb-2 mt-8">3. Thông tin chi tiết</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
              <div><label class="block text-sm font-medium text-gray-700 mb-1">Năm bắt đầu</label><input type="number" name="start_year" value="{{ old('start_year') }}" class="w-full border-gray-300 rounded p-2 border"></div>
@@ -147,7 +148,7 @@
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded">`;
+                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded">`;
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -163,7 +164,7 @@
         if (parentId) {
             // LÀ DỰ ÁN CON: Hiện Đơn vị, Ẩn Bộ
             ministryWrapper.classList.add('hidden');
-            ministrySelect.disabled = true; // Disable để không gửi dữ liệu
+            ministrySelect.disabled = true; 
             ministrySelect.required = false;
 
             unitWrapper.classList.remove('hidden');
@@ -176,7 +177,7 @@
             ministrySelect.required = true;
 
             unitWrapper.classList.add('hidden');
-            unitSelect.disabled = true; // Disable để không gửi dữ liệu
+            unitSelect.disabled = true;
             unitSelect.required = false;
         }
     }

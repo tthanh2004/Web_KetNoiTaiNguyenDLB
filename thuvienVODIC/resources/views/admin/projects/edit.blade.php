@@ -25,12 +25,16 @@
         
         <h3 class="text-lg font-bold text-blue-800 mb-4 border-b pb-2">1. Phân loại & Thông tin chung</h3>
         
+        {{-- LOGIC DỰ ÁN CHA / CON --}}
         <div class="bg-blue-50 p-4 rounded border border-blue-100 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {{-- 1. Chọn cấp dự án --}}
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Thuộc Dự án lớn (Dự án Cha)</label>
                     <select name="parent_id" id="parentSelect" onchange="toggleOwnerFields()" class="w-full border-blue-300 rounded p-2 bg-white border focus:ring-blue-500"
+                        {{-- Nếu đang có dự án con thì không cho sửa field này (để tránh lỗi logic) --}}
                         {{ $project->children->count() > 0 ? 'disabled' : '' }}>
+                        
                         <option value="">-- Không (Đây là Dự án Lớn / Cấp Bộ) --</option>
                         @foreach($parents as $p)
                             <option value="{{ $p->id }}" {{ old('parent_id', $project->parent_id) == $p->id ? 'selected' : '' }}>
@@ -38,14 +42,17 @@
                             </option>
                         @endforeach
                     </select>
+
+                    {{-- Nếu disabled select ở trên thì cần gửi input hidden để controller nhận được giá trị cũ --}}
                     @if($project->children->count() > 0)
-                        <p class="text-xs text-red-500 mt-1 italic">* Dự án này có dự án con, không thể chuyển thành con.</p>
                         <input type="hidden" name="parent_id" value="">
+                        <p class="text-xs text-red-500 mt-1 italic">* Dự án này đang có dự án thành phần, không thể chuyển thành dự án con.</p>
                     @else
                         <p class="text-xs text-gray-500 mt-1 italic">Chọn "Không" nếu đây là dự án cấp Bộ chủ trì.</p>
                     @endif
                 </div>
 
+                {{-- 2. Chọn Nhóm --}}
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nhóm Dự án <span class="text-red-500">*</span></label>
                     <select name="project_group_id" required class="w-full border-gray-300 rounded p-2 bg-white border">
@@ -59,17 +66,19 @@
             </div>
         </div>
 
+        {{-- CÁC TRƯỜNG CƠ BẢN --}}
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
             <div class="md:col-span-3">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Ảnh đại diện</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center relative h-40 flex items-center justify-center">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-2 text-center relative h-40 flex items-center justify-center hover:bg-gray-50 transition-colors">
                     <input type="file" name="thumbnail" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="previewImage(this)">
-                    <div id="imgPreview" class="w-full h-full flex items-center justify-center">
+                    <div id="imgPreview" class="w-full h-full flex items-center justify-center overflow-hidden">
                         @if($project->thumbnail)
-                            <img src="{{ asset($project->thumbnail) }}" class="w-full h-full object-cover rounded">
+                            <img src="{{ $project->thumbnail_url }}" class="w-full h-full object-contain rounded">
                         @else
                             <div class="text-gray-400 flex flex-col items-center">
-                                <i class="fa-regular fa-image text-3xl mb-1"></i><span class="text-xs">Chưa có ảnh</span>
+                                <i class="fa-regular fa-image text-3xl mb-1"></i>
+                                <span class="text-xs">Chưa có ảnh</span>
                             </div>
                         @endif
                     </div>
@@ -88,11 +97,12 @@
             </div>
         </div>
 
+        {{-- PHẦN 2: ĐƠN VỊ QUẢN LÝ (DYNAMIC) --}}
         <h3 class="text-lg font-bold text-blue-800 mb-4 border-b pb-2 mt-6">2. Đơn vị quản lý</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             
-            {{-- CASE A: BỘ CHỦ TRÌ --}}
-            <div id="ministryWrapper" class="{{ $project->parent_id ? 'hidden' : '' }}">
+            {{-- CASE A: BỘ CHỦ TRÌ (Hiện khi parent_id Rỗng) --}}
+            <div id="ministryWrapper">
                 <label class="block text-sm font-bold text-blue-900 mb-1">
                     <i class="fa-solid fa-landmark mr-1"></i> Bộ / Ngành chủ trì <span class="text-red-500">*</span>
                 </label>
@@ -107,8 +117,8 @@
                 <p class="text-xs text-blue-600 mt-1">Dành cho Dự án Lớn (Cấp Chính phủ/Bộ)</p>
             </div>
 
-            {{-- CASE B: ĐƠN VỊ THỰC HIỆN --}}
-            <div id="unitWrapper" class="{{ $project->parent_id ? '' : 'hidden' }}">
+            {{-- CASE B: ĐƠN VỊ THỰC HIỆN (Hiện khi parent_id Có giá trị) --}}
+            <div id="unitWrapper" class="hidden">
                 <label class="block text-sm font-bold text-green-900 mb-1">
                     <i class="fa-solid fa-building-user mr-1"></i> Đơn vị thực hiện <span class="text-red-500">*</span>
                 </label>
@@ -124,6 +134,7 @@
             </div>
         </div>
 
+        {{-- PHẦN 3: THÔNG TIN CHI TIẾT (Giữ nguyên) --}}
         <h3 class="text-lg font-bold text-blue-800 mb-4 border-b pb-2 mt-8">3. Thông tin chi tiết</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
              <div><label class="block text-sm font-medium text-gray-700 mb-1">Năm bắt đầu</label><input type="number" name="start_year" value="{{ old('start_year', $project->start_year) }}" class="w-full border-gray-300 rounded p-2 border"></div>
@@ -142,18 +153,20 @@
         <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-1">Nội dung tóm tắt</label><textarea name="content" rows="4" class="w-full border-gray-300 rounded p-2 border">{{ old('content', $project->content) }}</textarea></div>
         <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú thêm</label><textarea name="note" rows="2" class="w-full border-gray-300 rounded p-2 border">{{ old('note', $project->note) }}</textarea></div>
 
-        <div class="flex justify-end pt-6 border-t mt-6">
+        <div class="flex justify-end pt-4 border-t">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow transition-colors">
                 <i class="fa-solid fa-save mr-2"></i> Lưu thay đổi
             </button>
         </div>
     </form>
 
+    {{-- KHU VỰC QUẢN LÝ DỰ ÁN CON --}}
     <div class="bg-white p-8 rounded shadow-lg border-t-4 border-yellow-500">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-800">
                 <i class="fa-solid fa-sitemap mr-2"></i> Các Dự án Thành phần (Con)
             </h3>
+            {{-- CHỖ NÀY QUAN TRỌNG: Truyền parent_id sang trang Create --}}
             <a href="{{ route('admin.projects.create', ['parent_id' => $project->id]) }}" class="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200 transition-colors">
                 <i class="fa-solid fa-plus mr-1"></i> Thêm dự án con
             </a>
@@ -193,17 +206,19 @@
 </div>
 
 <script>
+    // Preview Ảnh
     function previewImage(input) {
         const preview = document.getElementById('imgPreview');
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded">`;
+                preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-contain rounded">`;
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
+    // Logic Ẩn/Hiện Form Bộ & Đơn vị (Quan trọng: Thêm .disabled để không gửi dữ liệu rác)
     function toggleOwnerFields() {
         const parentId = document.getElementById('parentSelect').value;
         const ministryWrapper = document.getElementById('ministryWrapper');
@@ -212,7 +227,7 @@
         const unitSelect = document.getElementById('unitSelect');
 
         if (parentId) {
-            // DỰ ÁN CON: Hiện Đơn vị, Ẩn Bộ
+            // LÀ DỰ ÁN CON: Hiện Đơn vị, Ẩn Bộ
             ministryWrapper.classList.add('hidden');
             ministrySelect.disabled = true; 
             ministrySelect.required = false;
@@ -221,7 +236,7 @@
             unitSelect.disabled = false;
             unitSelect.required = true;
         } else {
-            // DỰ ÁN CHA: Hiện Bộ, Ẩn Đơn vị
+            // LÀ DỰ ÁN CHA: Hiện Bộ, Ẩn Đơn vị
             ministryWrapper.classList.remove('hidden');
             ministrySelect.disabled = false;
             ministrySelect.required = true;
@@ -232,6 +247,7 @@
         }
     }
 
+    // Chạy khi load trang
     document.addEventListener('DOMContentLoaded', toggleOwnerFields);
 </script>
 @endsection

@@ -34,54 +34,6 @@ class ProjectController extends Controller
 
         return view('admin.projects.create', compact('groups', 'units', 'parents', 'ministries'));
     }
-
-    public function store(Request $request)
-    {
-        // 1. Validate dữ liệu theo logic Cha/Con
-        $request->validate([
-            'name' => 'required',
-            'project_group_id' => 'required',
-            
-            // Logic: Nếu không có cha (parent_id trống) -> Bắt buộc chọn Bộ
-            'ministry_id' => 'required_without:parent_id',
-            
-            // Logic: Nếu có cha (parent_id có giá trị) -> Bắt buộc chọn Đơn vị
-            'implementing_unit_id' => 'required_with:parent_id',
-            
-            'thumbnail' => 'nullable|image|max:2048',
-            'start_year' => 'nullable|integer|min:1900|max:2100',
-        ], [
-            'ministry_id.required_without' => 'Vui lòng chọn Bộ chủ trì (đối với dự án cấp Bộ/Lớn).',
-            'implementing_unit_id.required_with' => 'Vui lòng chọn Đơn vị thực hiện (đối với dự án thành phần).',
-        ]);
-
-        $data = $request->all();
-
-        // 2. Làm sạch dữ liệu (Data Cleaning)
-        if ($request->filled('parent_id')) {
-            // Nếu là Con: Xóa dữ liệu Bộ (để null), set Đơn vị
-            $data['ministry_id'] = null;
-        } else {
-            // Nếu là Cha: Xóa dữ liệu Đơn vị (để null), set Bộ
-            $data['implementing_unit_id'] = null;
-            // Đảm bảo parent_id là null chứ không phải chuỗi rỗng
-            $data['parent_id'] = null;
-        }
-
-        // 3. Xử lý upload ảnh
-        if ($request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store('public/projects');
-            $data['thumbnail'] = str_replace('public/', 'storage/', $path);
-        }
-
-        // 4. Gán User tạo (nếu có Auth)
-        $data['user_id'] = auth()->id() ?? null;
-
-        Project::create($data);
-
-        return redirect()->route('admin.projects.index')->with('success', 'Thêm dự án thành công');
-    }
-
     public function edit($id)
     {
         $project = Project::with('children')->findOrFail($id);
@@ -99,23 +51,20 @@ class ProjectController extends Controller
         return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries'));
     }
 
-    public function update(Request $request, $id)
+    public function store(Request $request)
     {
-        $project = Project::findOrFail($id);
-        
-        // 1. Validate tương tự Store
         $request->validate([
             'name' => 'required',
             'project_group_id' => 'required',
             'ministry_id' => 'required_without:parent_id',
             'implementing_unit_id' => 'required_with:parent_id',
-            'thumbnail' => 'nullable|image|max:2048',
-            'start_year' => 'nullable|integer|min:1900|max:2100',
+            'thumbnail' => 'nullable|image|max:5120',
+            'start_year' => 'nullable|integer',
         ]);
 
         $data = $request->all();
 
-        // 2. Làm sạch dữ liệu
+        // 1. Logic Cha/Con
         if ($request->filled('parent_id')) {
             $data['ministry_id'] = null;
         } else {
@@ -123,15 +72,67 @@ class ProjectController extends Controller
             $data['parent_id'] = null;
         }
 
-        // 3. Xử lý ảnh
+        // 2. Xử lý upload ảnh (QUAN TRỌNG: Thêm tham số 'public')
         if ($request->hasFile('thumbnail')) {
+            $file = $request->file('thumbnail');
+            
+            // Làm sạch tên file
+            $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_' . $cleanName;
+            
+            // Lưu vào disk 'public', folder 'projects'
+            // Kết quả file nằm ở: storage/app/public/projects/ten-file.png
+            $file->storeAs('projects', $filename, 'public');
+            
+            // Lưu đường dẫn DB (để asset() đọc được từ folder public/storage)
+            $data['thumbnail'] = 'storage/projects/' . $filename;
+        }
+
+        $data['user_id'] = auth()->id() ?? null;
+        Project::create($data);
+
+        return redirect()->route('admin.projects.index')->with('success', 'Thêm dự án thành công');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $project = Project::findOrFail($id);
+        
+        $request->validate([
+            'name' => 'required',
+            'project_group_id' => 'required',
+            'ministry_id' => 'required_without:parent_id',
+            'implementing_unit_id' => 'required_with:parent_id',
+            'thumbnail' => 'nullable|image|max:5120',
+        ]);
+
+        $data = $request->except(['thumbnail']); 
+
+        // 1. Logic Cha/Con
+        if ($request->filled('parent_id')) {
+            $data['ministry_id'] = null;
+        } else {
+            $data['implementing_unit_id'] = null;
+            $data['parent_id'] = null;
+        }
+
+        // 2. Xử lý ảnh
+        if ($request->hasFile('thumbnail')) {
+            // Xóa ảnh cũ
             if ($project->thumbnail) {
-                $oldPath = str_replace('storage/', 'public/', $project->thumbnail);
-                if (Storage::exists($oldPath)) Storage::delete($oldPath);
+                // Chuyển 'storage/projects/abc.jpg' thành 'projects/abc.jpg' để xóa trong disk public
+                $oldFile = str_replace('storage/', '', $project->thumbnail);
+                Storage::disk('public')->delete($oldFile);
             }
             
-            $path = $request->file('thumbnail')->store('public/projects');
-            $data['thumbnail'] = str_replace('public/', 'storage/', $path);
+            $file = $request->file('thumbnail');
+            $cleanName = preg_replace('/[^A-Za-z0-9\-\_.]/', '_', $file->getClientOriginalName());
+            $filename = time() . '_' . $cleanName;
+            
+            // Lưu file mới vào disk public
+            $file->storeAs('projects', $filename, 'public');
+            
+            $data['thumbnail'] = 'storage/projects/' . $filename;
         }
 
         $project->update($data);

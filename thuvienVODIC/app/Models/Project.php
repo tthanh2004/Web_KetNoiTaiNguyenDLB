@@ -62,4 +62,33 @@ class Project extends Model
     {
         return $this->belongsTo(Ministry::class);
     }
+
+    public function getThumbnailUrlAttribute()
+    {
+        if (!$this->thumbnail) {
+            return 'https://placehold.co/600x400?text=No+Image';
+        }
+
+        // Nếu là URL online
+        if (filter_var($this->thumbnail, FILTER_VALIDATE_URL)) {
+            return $this->thumbnail;
+        }
+
+        // Xử lý đường dẫn storage
+        $path = $this->thumbnail;
+        
+        // Fix lỗi đường dẫn cũ 'public/projects/...'
+        if (strpos($path, 'public/') === 0) {
+            $path = str_replace('public/', 'storage/', $path);
+        }
+        
+        // Nếu chưa có prefix storage/ (trường hợp lưu tên file trần)
+        if (strpos($path, 'storage/') === false) {
+            $path = 'storage/' . $path;
+        }
+
+        // SỬA QUAN TRỌNG: Mã hóa đường dẫn để xử lý khoảng trắng
+        // asset() tạo ra URL đầy đủ, ta dùng str_replace để encode khoảng trắng
+        return str_replace(' ', '%20', asset($path));
+    }
 }

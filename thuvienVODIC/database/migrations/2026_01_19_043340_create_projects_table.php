@@ -37,7 +37,6 @@ return new class extends Migration
             $table->string('status')->default('completed')->index(); 
             
             // --- KHÓA NGOẠI (FOREIGN KEYS) ---
-            // Lưu ý: Đã xóa ->change() và ->after() vì không dùng trong Create
             
             $table->foreignId('parent_id')->nullable()->constrained('projects')->onDelete('cascade');
             
