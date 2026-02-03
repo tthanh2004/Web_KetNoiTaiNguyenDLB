@@ -117,12 +117,12 @@
                 
                 <div class="bg-blue-900 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
                     <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
-                    <h3 class="text-lg font-bold mb-3 font-serif relative z-10">Bạn cần hỗ trợ?</h3>
+                    <h3 class="text-lg font-bold mb-3 relative z-10">Bạn cần hỗ trợ?</h3>
                     <p class="text-blue-100 text-sm mb-4 leading-relaxed relative z-10">
                         Nếu bạn không tìm thấy thông tin dự án mong muốn, hãy liên hệ với bộ phận lưu trữ của chúng tôi.
                     </p>
                     <div class="flex items-center gap-3 text-sm font-bold text-yellow-400 relative z-10">
-                        <i class="fa-solid fa-phone"></i> (024) 3773 xxxx
+                        <i class="fa-solid fa-phone"></i> 84-24-376 18159
                     </div>
                 </div>
 

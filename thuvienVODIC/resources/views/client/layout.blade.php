@@ -138,6 +138,15 @@
                 </nav>
 
                 <div class="flex items-center gap-2 xl:gap-3 flex-none ml-auto lg:ml-0">
+                    
+                    <form action="{{ route('client.search') }}" method="GET" class="hidden xl:flex items-center relative mr-2 group">
+                        <input type="text" name="keyword" 
+                               placeholder="Tìm kiếm" 
+                               class="bg-slate-100 text-slate-600 text-xs rounded-full border border-transparent focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 w-28 focus:w-56 transition-all duration-300 py-2 pl-4 pr-8 outline-none shadow-inner">
+                        <button type="submit" class="absolute right-2.5 text-slate-400 hover:text-blue-600 transition-colors">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </form>
                     @if (Route::has('login'))
                         @auth
                             <div class="relative group hidden lg:block">
@@ -176,6 +185,16 @@
 
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-blue-100 shadow-inner absolute w-full left-0 top-full z-40">
             <nav class="flex flex-col p-4 space-y-2 text-sm font-medium text-slate-700 max-h-[80vh] overflow-y-auto">
+                
+                <form action="{{ route('client.search') }}" method="GET" class="mb-2">
+                    <div class="relative">
+                        <input type="text" name="keyword" placeholder="Nhập từ khóa tìm kiếm" 
+                               class="w-full bg-slate-50 border border-blue-100 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
+                        <div class="absolute left-3 top-3 text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                    </div>
+                </form>
                 <a href="{{ route('home') }}" class="block p-3 hover:bg-blue-50 rounded-lg {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-700' : '' }}">
                     <i class="fa-solid fa-house-chimney w-6 text-center"></i> Trang chủ
                 </a>
@@ -278,9 +297,10 @@
                 <div>
                     <h3 class="font-bold text-blue-900 mb-4 uppercase text-xs tracking-wider">Liên hệ</h3>
                     <ul class="space-y-3 text-slate-500 text-xs">
-                        <li class="flex gap-3"><i class="fa-solid fa-location-dot mt-0.5 text-blue-700"></i> 83 Nguyễn Chí Thanh, Hà Nội</li>
-                        <li class="flex gap-3"><i class="fa-solid fa-phone mt-0.5 text-blue-700"></i> (024) 3773 xxxx</li>
-                        <li class="flex gap-3"><i class="fa-solid fa-envelope mt-0.5 text-blue-700"></i> webmaster@vodic.vn</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-envelope mt-0.5 text-blue-700"></i> Đơn vị quản lý: Phòng Quản lý dữ liệu và thư viện</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-location-dot mt-0.5 text-blue-700"></i> 83 Nguyễn Chí Thanh, Đống Đa, Hà Nội.</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-phone mt-0.5 text-blue-700"></i> 84-24-376 18159</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-envelope mt-0.5 text-blue-700"></i> hoanglong@vodic.vn</li>
                     </ul>
                 </div>
             </div>

@@ -9,17 +9,10 @@ class Product extends Model
 {
     use HasFactory;
 
-    // Các cột được phép lưu dữ liệu
-    protected $fillable = [
-        'name', 
-        'description', 
-        'file_url', 
-        'project_id' // Khóa ngoại liên kết bảng Projects
-    ];
+    protected $fillable = ['project_id', 'name', 'description', 'file_url', 'thumbnail'];
 
-    // Mối quan hệ: Sản phẩm này thuộc dự án nào?
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project_id');
+        return $this->belongsTo(Project::class);
     }
 }

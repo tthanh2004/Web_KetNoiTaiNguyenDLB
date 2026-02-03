@@ -54,6 +54,11 @@
                     <span>Dự án</span>
                 </a>
 
+                <a href="{{ route('admin.products.index') }}" 
+                   class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.products.*') ? 'bg-blue-700 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-folder-tree w-6"></i> Quản lý Sản phẩm
+                </a>
+
                 <a href="{{ route('admin.ministries.index') }}" 
                     class="flex items-center px-4 py-3 rounded-lg transition-colors {{ request()->routeIs('admin.ministries.*') ? 'bg-blue-700 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-landmark w-6"></i> 

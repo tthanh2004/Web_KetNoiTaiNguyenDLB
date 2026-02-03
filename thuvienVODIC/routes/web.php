@@ -25,6 +25,7 @@ use App\Http\Controllers\Client\ServiceController as ClientServiceController;
 use App\Http\Controllers\Client\StatisticController as ClientStatisticController;
 use App\Http\Controllers\Client\StatisticController as StatisticController;
 use App\Http\Controllers\Client\HelpController as ClientHelpController;
+use App\Http\Controllers\Client\SearchController as ClientSearchController;
 
 /* ==========================================================================
    KHÁCH (PUBLIC ROUTES)
@@ -60,6 +61,8 @@ Route::view('/gioi-thieu', 'client.help.about')->name('client.help.about');
 Route::view('/co-cau-to-chuc', 'client.help.org')->name('client.help.org');
 Route::view('/huong-dan', 'client.help.guide')->name('client.help.guide');
 Route::view('/lien-he', 'client.help.contact')->name('client.help.contact');
+// 7. Tìm kiếm
+Route::get('/tra-cuu', [App\Http\Controllers\Client\SearchController::class, 'index'])->name('client.search');
 
 /* ==========================================================================
    QUẢN TRỊ (ADMIN ROUTES)
@@ -92,9 +95,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
    Route::patch('/data_requests/{id}/update-status', [AdminRequestController::class, 'update'])->name('data_requests.update_status');
    // Quản lý Nhóm dự án
    Route::resource('project-groups', AdminProjectGroupController::class);
-
+   // Tải tài liệu
    Route::get('documents/{id}/download', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('documents.download');
+   // Quản lý Sản phẩm
+   Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
 });
+
+
 
 /* ==========================================================================
    AUTHENTICATION & PROFILE

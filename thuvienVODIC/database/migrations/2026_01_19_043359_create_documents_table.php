@@ -24,7 +24,6 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             
             // 2. Thuộc dự án nào? (Quan trọng)
-            // Nếu xóa dự án, tài liệu đi theo luôn (Cascade)
             $table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
             
             $table->timestamps();
