@@ -8,17 +8,34 @@ use App\Models\Project;
 use App\Models\ProjectGroup;
 use App\Models\Ministry;
 use App\Models\ImplementingUnit;
-use App\Models\Field; // Thêm Model Field
+use App\Models\Field;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::with(['project_group', 'implementing_unit', 'ministry', 'parent', 'field'])
-                           ->orderBy('id', 'desc')
-                           ->paginate(10);
-        return view('admin.projects.index', compact('projects'));
+        $groups = ProjectGroup::all(); // Lấy để hiện thị bộ lọc
+
+        $query = Project::with(['field', 'project_group'])
+                        ->withCount('children'); // Đếm số dự án con
+
+        // Thực hiện lọc nếu có keyword
+        if($request->keyword) {
+            $query->where('name', 'like', '%' . $request->keyword . '%')
+                ->orWhere('code_number', 'like', '%' . $request->keyword . '%');
+        }
+
+        // Thực hiện lọc theo nhóm
+        if($request->group_id) {
+            $query->where('project_group_id', $request->group_id);
+        }
+
+        $projects = $query->orderBy('parent_id', 'asc') // Hiện dự án cha trước
+                        ->orderBy('id', 'desc')
+                        ->paginate(15);
+
+        return view('admin.projects.index', compact('projects', 'groups'));
     }
 
     public function create()
@@ -83,16 +100,17 @@ class ProjectController extends Controller
 
     public function edit($id)
     {
-        $project = Project::with('children')->findOrFail($id);
+        $project = Project::with(['children', 'field'])->findOrFail($id); // Load quan hệ field
         $ministries = Ministry::all();
         $groups = ProjectGroup::all();
         $units = ImplementingUnit::all();
-        $fields = Field::all(); // Lấy danh sách Lĩnh vực
+        
+        $fields = Field::all(); 
         
         $parents = Project::where('id', '!=', $id)
-                          ->select('id', 'name', 'code_number')
-                          ->orderBy('created_at', 'desc')
-                          ->get();
+                        ->select('id', 'name', 'code_number')
+                        ->orderBy('created_at', 'desc')
+                        ->get();
 
         return view('admin.projects.edit', compact('project', 'groups', 'units', 'parents', 'ministries', 'fields'));
     }

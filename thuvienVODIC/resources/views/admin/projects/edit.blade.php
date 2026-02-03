@@ -68,7 +68,9 @@
                     <select name="field_id" required class="w-full border-gray-300 rounded p-2 bg-white border focus:ring-blue-500">
                         <option value="">-- Chọn lĩnh vực --</option>
                         @foreach($fields as $field)
-                            <option value="{{ $field->id }}" {{ old('field_id') == $field->id ? 'selected' : '' }}>
+                            <option value="{{ $field->id }}" 
+                                {{-- Logic quan trọng: Kiểm tra dữ liệu cũ từ request hoặc dữ liệu đã lưu trong DB --}}
+                                {{ (old('field_id') ?? $project->field_id) == $field->id ? 'selected' : '' }}>
                                 {{ $field->name }}
                             </option>
                         @endforeach

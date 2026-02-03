@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['project_id', 'name', 'description', 'file_url', 'thumbnail'];
+    protected $fillable = ['project_id', 'name', 'description', 'file_path', 'file_extension', 'thumbnail'];
 
     public function project()
     {
@@ -27,18 +27,16 @@ class Product extends Model
         }
 
         $path = $this->thumbnail;
-        
-        // Fix đường dẫn cũ
         if (strpos($path, 'public/') === 0) {
             $path = str_replace('public/', 'storage/', $path);
         }
-        
-        // Thêm prefix storage nếu chưa có
-        if (strpos($path, 'storage/') === false) {
-            $path = 'storage/' . $path;
-        }
 
-        // Mã hóa khoảng trắng để tránh lỗi 404
-        return str_replace(' ', '%20', asset($path));
+        return asset($path);
+    }
+
+    // Link tải file
+    public function getFileUrlAttribute() {
+        if (!$this->file_path) return null;
+        return asset(str_replace('public/', 'storage/', $this->file_path));
     }
 }

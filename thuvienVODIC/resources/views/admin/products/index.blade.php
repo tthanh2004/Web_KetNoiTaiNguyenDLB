@@ -1,54 +1,56 @@
 @extends('admin.layout.app')
 
 @section('content')
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Quản lý Sản phẩm</h1>
-    <a href="{{ route('admin.products.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition-colors">
-        <i class="fa-solid fa-plus mr-1"></i> Thêm Sản phẩm
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-black text-slate-800 tracking-tight">Quản lý Sản phẩm</h1>
+    <a href="{{ route('admin.products.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-blue-200 transition-all flex items-center gap-2">
+        <i class="fa-solid fa-plus"></i> Thêm Sản phẩm
     </a>
 </div>
 
-<div class="bg-white rounded shadow overflow-x-auto">
-    <table class="min-w-full leading-normal">
+<div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+    <table class="min-w-full">
         <thead>
-            <tr class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold">
-                <th class="px-5 py-3 text-left">Hình ảnh</th>
-                <th class="px-5 py-3 text-left">Tên sản phẩm</th>
-                <th class="px-5 py-3 text-left">Thuộc Dự án</th>
-                <th class="px-5 py-3 text-center">Hành động</th>
+            <tr class="bg-slate-50/50 border-b border-slate-100 text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em]">
+                <th class="px-8 py-5 text-left">Sản phẩm & Hình ảnh</th>
+                <th class="px-8 py-5 text-left">Dự án gốc</th>
+                <th class="px-8 py-5 text-left">Định dạng</th>
+                <th class="px-8 py-5 text-right">Thao tác</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-50">
             @foreach($products as $product)
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td class="px-5 py-3">
-                    {{-- SỬA: Dùng thumbnail_url để tự động fix đường dẫn --}}
-                    <div class="w-16 h-12 bg-gray-50 border rounded flex items-center justify-center overflow-hidden">
-                        <img src="{{ $product->thumbnail_url }}" class="w-full h-full object-contain" alt="Thumbnail">
+            <tr class="hover:bg-blue-50/30 transition-colors">
+                <td class="px-8 py-5">
+                    <div class="flex items-center gap-4">
+                        <img src="{{ $product->thumbnail_url }}" class="w-16 h-12 object-cover rounded-lg shadow-sm border border-slate-200">
+                        <div>
+                            <div class="font-bold text-slate-800">{{ $product->name }}</div>
+                            <div class="text-[10px] text-slate-400 font-mono">#{{ $product->id }}</div>
+                        </div>
                     </div>
                 </td>
-                
-                <td class="px-5 py-3">
-                    <div class="font-semibold text-gray-700">{{ $product->name }}</div>
-                    <div class="text-xs text-gray-400 mt-1">ID: {{ $product->id }}</div>
+                <td class="px-8 py-5 text-sm font-medium text-slate-600">
+                    {{ Str::limit($product->project->name ?? '---', 40) }}
                 </td>
-                
-                <td class="px-5 py-3 text-sm text-blue-600">
-                    {{-- Thêm ?? '---' để tránh lỗi nếu dự án bị xóa --}}
-                    {{ Str::limit($product->project->name ?? '---', 50) }}
+                <td class="px-8 py-5">
+                    @if($product->file_extension)
+                        <span class="px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-black rounded-full border border-amber-100 uppercase italic">
+                           .{{ $product->file_extension }}
+                        </span>
+                    @else
+                        <span class="text-slate-300 text-xs italic">Không có file</span>
+                    @endif
                 </td>
-                
-                <td class="px-5 py-3 text-center">
-                    <div class="flex items-center justify-center space-x-3">
-                        <a href="{{ route('admin.products.edit', $product->id) }}" class="text-blue-500 hover:text-blue-700" title="Sửa">
-                            <i class="fa-solid fa-pen-to-square text-lg"></i>
+                <td class="px-8 py-5 text-right">
+                    <div class="flex justify-end gap-2">
+                        <a href="{{ route('admin.products.edit', $product->id) }}" class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        
-                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
-                            @csrf 
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-700" title="Xóa">
-                                <i class="fa-solid fa-trash text-lg"></i>
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Xóa sản phẩm này?')">
+                            @csrf @method('DELETE')
+                            <button class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
                     </div>
@@ -57,12 +59,5 @@
             @endforeach
         </tbody>
     </table>
-    
-    {{-- Phân trang --}}
-    @if($products->hasPages())
-        <div class="p-4 border-t">
-            {{ $products->links() }}
-        </div>
-    @endif
 </div>
 @endsection

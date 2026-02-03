@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Quản lý Bộ & Cơ quan ngang Bộ</h1>
+    <h1 class="text-2xl font-bold text-gray-800">Quản lý danh sách Bộ</h1>
     <a href="{{ route('admin.ministries.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 transition">
         <i class="fa-solid fa-plus mr-2"></i> Thêm mới
     </a>

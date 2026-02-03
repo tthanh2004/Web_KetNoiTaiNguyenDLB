@@ -18,14 +18,14 @@
                         <div class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center flex-none"><i class="fa-solid fa-phone"></i></div>
                         <div>
                             <div class="font-bold text-blue-200 text-sm uppercase">Điện thoại</div>
-                            <div>(024) 3773 xxxx</div>
+                            <div>(84-24) 376 18159</div>
                         </div>
                     </li>
                     <li class="flex items-start gap-4">
                         <div class="w-10 h-10 rounded-full bg-blue-800 flex items-center justify-center flex-none"><i class="fa-solid fa-envelope"></i></div>
                         <div>
                             <div class="font-bold text-blue-200 text-sm uppercase">Email</div>
-                            <div>webmaster@vodic.vn</div>
+                            <div>hoanglong@vodic.vn</div>
                         </div>
                     </li>
                 </ul>

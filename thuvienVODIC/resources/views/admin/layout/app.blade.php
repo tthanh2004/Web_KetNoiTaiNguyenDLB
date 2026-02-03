@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard') - Hệ thống VODIC</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/logovodic.jpg') }}">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -116,7 +117,7 @@
                 </button>
 
                 <div class="hidden md:block text-gray-400 text-sm font-medium">
-                    Hệ thống quản trị cơ sở dữ liệu quốc gia
+                    Trang thông tin Thư viện - Trung tâm Thông tin, dữ liệu biển và hải đảo quốc gia
                 </div>
 
                 <div class="flex items-center gap-4">

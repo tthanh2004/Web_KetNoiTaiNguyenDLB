@@ -3,320 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thư viện VODIC - Cổng thông tin dữ liệu biển</title>
+    <title>Thư viện VODIC</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('img/logovodic.jpg') }}">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&family=Inter:wght@300;400;500;600;700&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .font-serif { font-family: 'Merriweather', serif; }
-        
-        /* Dropdown Animation */
+        h1, h2, h3, .font-heading { font-family: 'Montserrat', sans-serif; }
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .dropdown-menu { opacity: 0; visibility: hidden; transform: translateY(12px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .group:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-        .dropdown-menu { opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Style cho trạng thái đang active */
+        .nav-active { background-color: #eff6ff; color: #1d4ed8 !important; font-weight: 800; border: 1px solid #dbeafe; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen text-[15px]">
 
-    <header class="bg-white/95 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
-        <div class="container mx-auto px-2 sm:px-4 lg:px-8 py-3">
-            <div class="flex items-center justify-between lg:justify-start gap-4">
+    <header class="glass-header border-b border-blue-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
+        <div class="container mx-auto px-2 lg:px-6">
+            <div class="flex items-center h-20 justify-between gap-2">
                 
-                <a href="{{ route('home') }}" class="flex items-center gap-3 group flex-none max-w-[70%] lg:max-w-max">
-                    <div class="flex-none">
-                        <img src="{{ asset('img/logovodic.jpg') }}" 
-                            alt="Logo VODIC" 
-                            class="h-10 md:h-12 w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300">
-                    </div>
-
-                    <div class="hidden sm:block leading-tight">
-                        <div class="font-bold text-sm md:text-base lg:text-lg text-red-500 tracking-wide font-semibold leading-tight">
-                            Trung tâm Thông tin, dữ liệu biển<br>
-                            và hải đảo quốc gia
+                {{-- LOGO AREA --}}
+                <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0 group">
+                    <img src="{{ asset('img/logovodic.jpg') }}" alt="Logo VODIC" class="h-10 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105 duration-300">
+                    <div class="hidden xl:block leading-tight border-l border-slate-200 pl-3">
+                        <div class="font-extrabold text-[11px] text-red-600 tracking-tight uppercase leading-4">
+                            Trung tâm Thông tin, dữ liệu biển<br>và hải đảo quốc gia
                         </div>
-                        <div class="text-[15px] text-blue-500 uppercase tracking-widest font-semibold font-sans">
-                            CỤC BIỂN VÀ HẢI ĐẢO VIỆT NAM
+                        <div class="text-[10px] text-blue-700 uppercase tracking-widest font-bold opacity-90">
+                            Cục Biển và Hải đảo Việt Nam
                         </div>
                     </div>
                 </a>
 
-                <nav class="hidden lg:flex items-center space-x-0 xl:space-x-1 text-[13px] xl:text-sm font-bold text-blue-900 ml-auto">
+                {{-- DESKTOP NAVIGATION --}}
+                <nav class="hidden lg:flex items-center justify-center flex-1 gap-x-1 font-bold text-blue-900">
                     
-                    <a href="{{ route('home') }}" class="whitespace-nowrap hover:text-cyan-600 hover:bg-blue-50 px-2 xl:px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('home') ? 'text-cyan-700 bg-blue-50' : '' }}">
-                        <i class="fa-solid fa-house-chimney"></i> Trang chủ
+                    {{-- Trang chủ --}}
+                    <a href="{{ route('home') }}" class="px-3 py-2 rounded-full text-[13px] transition-all hover:bg-blue-50 hover:text-cyan-700 whitespace-nowrap {{ request()->routeIs('home') ? 'nav-active' : '' }}">
+                        <i class="fa-solid fa-house-chimney mr-1 text-[12px]"></i> Trang chủ
                     </a>
 
-                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600">
-                            <i class="fa-solid fa-magnifying-glass"></i> Tra cứu 
-                            <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
-                        </span>
-                        <div class="dropdown-menu absolute left-0 top-full pt-3 w-56 -ml-2">
-                            <div class="bg-white border border-blue-100 shadow-xl rounded-xl overflow-hidden">
-                                <a href="{{ route('client.projects.index') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-folder-open mr-2 text-blue-400"></i> Theo Dự án
+                    {{-- 1. Tra cứu --}}
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 px-3 py-2 text-[13px] rounded-full hover:bg-blue-50 transition-all whitespace-nowrap {{ request()->routeIs('client.projects.*') || request()->routeIs('client.products.*') ? 'nav-active' : '' }}">
+                            <i class="fa-solid fa-magnifying-glass mr-1 text-[12px]"></i> Tra cứu <i class="fa-solid fa-caret-down text-[10px] opacity-60"></i>
+                        </button>
+                        <div class="dropdown-menu absolute left-0 top-full pt-2 w-52">
+                            <div class="bg-white border border-blue-50 shadow-2xl rounded-xl p-2">
+                                <a href="{{ route('client.projects.index') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-slate-600 text-sm font-medium {{ request()->routeIs('client.projects.*') ? 'text-blue-600' : '' }}">
+                                    <i class="fa-solid fa-folder-open text-blue-400"></i> Theo Dự án
                                 </a>
-                                <a href="{{ route('client.products.index') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium">
-                                    <i class="fa-solid fa-cube mr-2 text-blue-400"></i> Theo Sản phẩm
+                                <a href="{{ route('client.products.index') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-slate-600 text-sm font-medium {{ request()->routeIs('client.products.*') ? 'text-blue-600' : '' }}">
+                                    <i class="fa-solid fa-cube text-blue-400"></i> Theo Sản phẩm
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <a href="{{ route('client.documents.index') }}" class="whitespace-nowrap hover:text-cyan-600 hover:bg-blue-50 px-2 xl:px-4 py-2 rounded-full transition-all flex items-center gap-1.5 {{ request()->routeIs('client.documents.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
-                        <i class="fa-solid fa-database"></i> Tài liệu số
+                    {{-- 2. Tài liệu số --}}
+                    <a href="{{ route('client.documents.index') }}" class="px-3 py-2 rounded-full text-[13px] transition-all hover:bg-blue-50 hover:text-cyan-700 whitespace-nowrap {{ request()->routeIs('client.documents.*') ? 'nav-active' : '' }}">
+                        <i class="fa-solid fa-database mr-1 text-[12px]"></i> Tài liệu số
                     </a>
 
-                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600">
-                            <i class="fa-solid fa-hand-holding-heart"></i> Dịch vụ 
-                            <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
-                        </span>
-                        <div class="dropdown-menu absolute left-0 top-full pt-3 w-64 -ml-4">
-                            <div class="bg-white border border-blue-100 shadow-xl rounded-xl overflow-hidden">
-                                <a href="{{ route('client.services.fees') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors border-b border-blue-50 text-slate-600 font-medium">
-                                    <i class="fa-solid fa-receipt mr-2 text-blue-400"></i> Biểu mức thu phí
+                    {{-- 3. Dịch vụ (Đủ 3 mục) --}}
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 px-3 py-2 text-[13px] rounded-full hover:bg-blue-50 transition-all whitespace-nowrap {{ request()->routeIs('client.services.*') ? 'nav-active' : '' }}">
+                            <i class="fa-solid fa-hand-holding-heart mr-1 text-[12px]"></i> Dịch vụ <i class="fa-solid fa-caret-down text-[10px] opacity-60"></i>
+                        </button>
+                        <div class="dropdown-menu absolute left-0 top-full pt-2 w-64">
+                            <div class="bg-white border border-blue-50 shadow-2xl rounded-xl p-2">
+                                <a href="{{ route('client.services.fees') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 rounded-lg text-sm text-slate-600 font-medium">
+                                    <i class="fa-solid fa-receipt text-blue-400"></i> Biểu mức thu phí
                                 </a>
-                                <a href="{{ route('client.request.create') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors border-b border-blue-50 text-slate-600 font-medium">
-                                    <i class="fa-regular fa-paper-plane mr-2 text-blue-400"></i> Đề nghị cung cấp dữ liệu
+                                <a href="{{ route('client.request.create') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 rounded-lg text-sm text-slate-600 font-medium border-t border-slate-50">
+                                    <i class="fa-regular fa-paper-plane text-blue-400"></i> Đề nghị dữ liệu
                                 </a>
-                                <a href="{{ route('client.services.other') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium">
-                                    <i class="fa-solid fa-ellipsis mr-2 text-blue-400"></i> Dịch vụ khác
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600 {{ request()->routeIs('client.statistics.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
-                            <i class="fa-solid fa-chart-simple"></i> Thống kê 
-                            <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
-                        </span>
-                        <div class="dropdown-menu absolute right-0 top-full pt-3 w-64">
-                            <div class="bg-white border border-blue-100 shadow-xl rounded-xl overflow-hidden">
-                                <a href="{{ route('client.statistics.projects') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-chart-pie mr-2 text-blue-400"></i> Theo Dự án
-                                </a>
-                                <a href="{{ route('client.statistics.scheme47') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-file-contract mr-2 text-blue-400"></i> Theo Đề án 47
-                                </a>
-                                <a href="{{ route('client.statistics.units') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-building-columns mr-2 text-blue-400"></i> Theo đơn vị thực hiện
-                                </a>
-                                <a href="{{ route('client.statistics.ministries') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-landmark mr-2 text-blue-400"></i> Theo Bộ ngành
-                                </a>
-                                <a href="{{ route('client.statistics.documents') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium">
-                                    <i class="fa-solid fa-server mr-2 text-blue-400"></i> Tài liệu số hóa
+                                <a href="{{ route('client.services.other') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 rounded-lg text-sm text-slate-600 font-medium border-t border-slate-50">
+                                    <i class="fa-solid fa-ellipsis text-blue-400"></i> Dịch vụ khác
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="relative group px-2 xl:px-3 py-2 cursor-pointer rounded-full hover:bg-blue-50 transition-all">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap group-hover:text-cyan-600 {{ request()->routeIs('client.help.*') ? 'text-cyan-700 bg-blue-50' : '' }}">
-                            <i class="fa-solid fa-life-ring"></i> Trợ giúp 
-                            <i class="fa-solid fa-caret-down text-[10px] opacity-60 group-hover:rotate-180 transition-transform duration-300"></i>
-                        </span>
-                        <div class="dropdown-menu absolute right-0 top-full pt-3 w-64">
-                            <div class="bg-white border border-blue-100 shadow-xl rounded-xl overflow-hidden">
-                                <a href="{{ route('client.request.create') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors border-b border-blue-50 text-slate-600 font-medium">
-                                    <i class="fa-regular fa-envelope-open mr-2 text-blue-400"></i> Gửi yêu cầu dữ liệu
+                    {{-- 4. Thống kê (Đủ 5 mục) --}}
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 px-3 py-2 text-[13px] rounded-full hover:bg-blue-50 transition-all whitespace-nowrap {{ request()->routeIs('client.statistics.*') ? 'nav-active' : '' }}">
+                            <i class="fa-solid fa-chart-simple mr-1 text-[12px]"></i> Thống kê <i class="fa-solid fa-caret-down text-[10px] opacity-60"></i>
+                        </button>
+                        <div class="dropdown-menu absolute left-0 top-full pt-2 w-64">
+                            <div class="bg-white border border-blue-50 shadow-2xl rounded-xl p-2 font-medium">
+                                <a href="{{ route('client.statistics.projects') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600">
+                                    <i class="fa-solid fa-chart-pie text-blue-400"></i> Theo Dự án
                                 </a>
-                                <a href="{{ route('client.help.guide') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium border-b border-slate-50">
-                                    <i class="fa-solid fa-book-open mr-2 text-blue-400"></i> Hướng dẫn sử dụng
+                                <a href="{{ route('client.statistics.scheme47') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-file-contract text-blue-400"></i> Theo Đề án 47
                                 </a>
-                                <a href="{{ route('client.help.contact') }}" class="block px-4 py-3 hover:bg-blue-50 hover:text-cyan-700 transition-colors text-slate-600 font-medium">
-                                    <i class="fa-solid fa-headset mr-2 text-blue-400"></i> Liên hệ
+                                <a href="{{ route('client.statistics.units') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-building-columns text-blue-400"></i> Theo đơn vị
+                                </a>
+                                <a href="{{ route('client.statistics.ministries') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-landmark text-blue-400"></i> Theo Bộ ngành
+                                </a>
+                                <a href="{{ route('client.statistics.documents') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-server text-blue-400"></i> Tài liệu số hóa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 5. Trợ giúp (Đủ 3 mục) --}}
+                    <div class="relative group">
+                        <button class="flex items-center gap-1 px-3 py-2 text-[13px] rounded-full hover:bg-blue-50 transition-all whitespace-nowrap {{ request()->routeIs('client.help.*') ? 'nav-active' : '' }}">
+                            <i class="fa-solid fa-life-ring mr-1 text-[12px]"></i> Trợ giúp <i class="fa-solid fa-caret-down text-[10px] opacity-60"></i>
+                        </button>
+                        <div class="dropdown-menu absolute right-0 top-full pt-2 w-64">
+                            <div class="bg-white border border-blue-50 shadow-2xl rounded-xl p-2 font-medium">
+                                <a href="{{ route('client.request.create') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600">
+                                    <i class="fa-regular fa-envelope-open text-blue-400"></i> Gửi yêu cầu dữ liệu
+                                </a>
+                                <a href="{{ route('client.help.guide') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-book-open text-blue-400"></i> Hướng dẫn sử dụng
+                                </a>
+                                <a href="{{ route('client.help.contact') }}" class="flex items-center gap-3 px-4 py-2 hover:bg-blue-50 rounded-lg text-sm text-slate-600 border-t border-slate-50">
+                                    <i class="fa-solid fa-headset text-blue-400"></i> Liên hệ
                                 </a>
                             </div>
                         </div>
                     </div>
                 </nav>
 
-                <div class="flex items-center gap-2 xl:gap-3 flex-none ml-auto lg:ml-0">
-                    
-                    <form action="{{ route('client.search') }}" method="GET" class="hidden xl:flex items-center relative mr-2 group">
-                        <input type="text" name="keyword" 
-                               placeholder="Tìm kiếm" 
-                               class="bg-slate-100 text-slate-600 text-xs rounded-full border border-transparent focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 w-28 focus:w-56 transition-all duration-300 py-2 pl-4 pr-8 outline-none shadow-inner">
-                        <button type="submit" class="absolute right-2.5 text-slate-400 hover:text-blue-600 transition-colors">
-                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                {{-- ACTION AREA --}}
+                <div class="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
+                    <form action="{{ route('client.search') }}" method="GET" class="hidden xl:flex items-center relative group">
+                        <input type="text" name="keyword" placeholder="Tìm kiếm..." class="bg-slate-100 text-slate-600 text-xs rounded-full border border-slate-200 focus:bg-white focus:border-blue-400 w-28 focus:w-40 transition-all py-2 pl-4 pr-10 outline-none">
+                        <button type="submit" class="absolute right-3 text-slate-400 group-hover:text-blue-600 transition-colors">
+                            <i class="fa-solid fa-magnifying-glass text-[11px]"></i>
                         </button>
                     </form>
-                    @if (Route::has('login'))
-                        @auth
-                            <div class="relative group hidden lg:block">
-                                <button class="flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-2 rounded-full font-bold text-xs border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm">
-                                    <div class="w-6 h-6 rounded-full bg-blue-200 flex items-center justify-center text-blue-800"><i class="fa-solid fa-user text-[10px]"></i></div>
-                                    <span class="truncate max-w-[80px] xl:max-w-[120px]">{{ Auth::user()->name }}</span>
-                                    <i class="fa-solid fa-caret-down opacity-50 group-hover:rotate-180 transition-transform"></i>
-                                </button>
-                                <div class="dropdown-menu absolute right-0 top-full pt-2 w-56">
-                                    <div class="bg-white border border-blue-100 shadow-lg rounded-xl overflow-hidden">
-                                        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 font-medium border-b border-slate-50">
-                                            <i class="fa-solid fa-gauge-high mr-2 text-blue-400"></i> Trang quản trị
-                                        </a>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 font-medium">
-                                                <i class="fa-solid fa-right-from-bracket mr-2"></i> Đăng xuất
-                                            </button>
-                                        </form>
-                                    </div>
+
+                    <div class="h-6 w-[1px] bg-slate-200 hidden xl:block mx-1"></div>
+
+                    @auth
+                        <div class="relative group">
+                            <button class="flex items-center gap-2 bg-blue-50 text-blue-800 px-3 py-2 rounded-full font-bold text-[11px] border border-blue-100">
+                                <span class="truncate max-w-[60px] xl:max-w-[90px]">{{ Auth::user()->name }}</span>
+                                <i class="fa-solid fa-caret-down opacity-50"></i>
+                            </button>
+                            <div class="dropdown-menu absolute right-0 top-full pt-2 w-48">
+                                <div class="bg-white border border-blue-50 shadow-xl rounded-xl p-1 text-xs font-bold text-slate-600">
+                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-blue-50 rounded-lg">Quản trị</a>
+                                    <form method="POST" action="{{ route('logout') }}">@csrf<button class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg">Đăng xuất</button></form>
                                 </div>
                             </div>
-                        @else
-                            <a href="{{ route('login') }}" class="hidden lg:flex items-center gap-2 bg-blue-900 text-white px-4 xl:px-6 py-2 xl:py-2.5 rounded-full font-bold text-xs shadow-md hover:bg-cyan-700 hover:shadow-lg transition-all transform hover:-translate-y-0.5 whitespace-nowrap">
-                                <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
-                            </a>
-                        @endauth
-                    @endif
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="hidden lg:flex bg-blue-900 text-white px-5 py-2 rounded-full font-bold text-[11px] hover:bg-cyan-700 transition-all shadow-md active:scale-95">
+                            ĐĂNG NHẬP
+                        </a>
+                    @endauth
 
-                    <button id="mobile-menu-btn" class="lg:hidden text-blue-900 text-2xl p-1 focus:outline-none hover:text-cyan-600 transition-colors">
-                        <i class="fa-solid fa-bars"></i>
+                    <button id="mobile-menu-btn" class="lg:hidden text-blue-900 text-2xl p-2 hover:bg-blue-50 rounded-lg transition-colors relative z-50">
+                        <i class="fa-solid fa-bars-staggered"></i>
                     </button>
                 </div>
             </div>
-        </div>
 
-        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-blue-100 shadow-inner absolute w-full left-0 top-full z-40">
-            <nav class="flex flex-col p-4 space-y-2 text-sm font-medium text-slate-700 max-h-[80vh] overflow-y-auto">
-                
-                <form action="{{ route('client.search') }}" method="GET" class="mb-2">
-                    <div class="relative">
-                        <input type="text" name="keyword" placeholder="Nhập từ khóa tìm kiếm" 
-                               class="w-full bg-slate-50 border border-blue-100 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200">
-                        <div class="absolute left-3 top-3 text-slate-400">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </div>
-                    </div>
-                </form>
-                <a href="{{ route('home') }}" class="block p-3 hover:bg-blue-50 rounded-lg {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-700' : '' }}">
-                    <i class="fa-solid fa-house-chimney w-6 text-center"></i> Trang chủ
-                </a>
-                
-                <div class="block p-3 hover:bg-blue-50 rounded-lg">
-                    <div class="font-bold text-blue-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-magnifying-glass"></i> Tra cứu</div>
-                    <div class="pl-8 space-y-2 text-slate-500 text-xs">
-                        <a href="{{ route('client.projects.index') }}" class="block">• Theo Dự án</a>
-                        <a href="{{ route('client.products.index') }}" class="block">• Theo Sản phẩm</a>
-                    </div>
-                </div>
-
-                <a href="{{ route('client.documents.index') }}" class="block p-3 hover:bg-blue-50 rounded-lg">
-                    <i class="fa-solid fa-database w-6 text-center"></i> Tài liệu số
-                </a>
-
-                <div class="block p-3 hover:bg-blue-50 rounded-lg">
-                    <div class="font-bold text-blue-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart"></i> Dịch vụ</div>
-                    <div class="pl-8 space-y-2 text-slate-500 text-xs">
-                        <a href="{{ route('client.services.fees') }}" class="block">• Biểu mức thu phí</a>
-                        <a href="{{ route('client.request.create') }}" class="block">• Đề nghị cung cấp dữ liệu</a>
-                    </div>
-                </div>
-
-                <div class="block p-3 hover:bg-blue-50 rounded-lg">
-                    <div class="font-bold text-blue-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-chart-simple"></i> Thống kê</div>
-                    <div class="pl-8 space-y-2 text-slate-500 text-xs">
-                        <a href="{{ route('client.statistics.projects') }}" class="block">• Theo Dự án / Đề án</a>
-                        <a href="{{ route('client.statistics.scheme47') }}" class="block">• Theo Đề án 47</a>
-                        <a href="{{ route('client.statistics.units') }}" class="block">• Theo đơn vị thực hiện</a>
-                        <a href="{{ route('client.statistics.ministries') }}" class="block">• Theo Bộ ngành</a>
-                        <a href="{{ route('client.statistics.documents') }}" class="block">• Tài liệu số hóa</a>
-                    </div>
-                </div>
-
-                <a href="{{ route('client.request.create') }}" class="block p-3 hover:bg-blue-50 rounded-lg text-blue-700 bg-blue-50/50">
-                    <i class="fa-solid fa-life-ring w-6 text-center"></i> Gửi yêu cầu dữ liệu
-                </a>
-                
-                <div class="border-t border-blue-100 my-2 pt-2">
-                    @auth
-                        <a href="{{ route('admin.dashboard') }}" class="block p-3 text-slate-600 hover:text-blue-700">Vào trang quản trị</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button class="w-full text-left p-3 text-red-600">Đăng xuất</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="block p-3 text-center bg-blue-900 text-white rounded-lg mt-2">Đăng nhập</a>
-                    @endauth
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    @if(session('success'))
-        <div class="container mx-auto px-4 mt-6">
-            <div class="bg-cyan-50 border border-cyan-200 text-cyan-800 px-4 py-3 rounded-lg flex items-center shadow-sm animate-fade-in-down">
-                <i class="fa-solid fa-circle-check text-xl mr-3"></i> 
-                <span>{{ session('success') }}</span>
+            {{-- MOBILE MENU CONTAINER --}}
+            <div id="mobile-menu-container" class="hidden lg:hidden bg-white border-t border-slate-100 py-4 px-2 space-y-1 shadow-2xl absolute left-0 w-full z-40 animate-in slide-in-from-top duration-300">
+                <a href="{{ route('home') }}" class="block p-3 font-bold rounded-xl {{ request()->routeIs('home') ? 'bg-blue-50 text-blue-700' : 'text-blue-900' }}">Trang chủ</a>
+                <a href="{{ route('client.projects.index') }}" class="block p-3 font-semibold text-blue-800 pl-6">Tra cứu Dự án</a>
+                <a href="{{ route('client.documents.index') }}" class="block p-3 font-semibold text-blue-800 pl-6">Tài liệu số</a>
+                <a href="{{ route('client.services.fees') }}" class="block p-3 font-semibold text-blue-800 pl-6">Dịch vụ</a>
+                <a href="{{ route('client.statistics.projects') }}" class="block p-3 font-semibold text-blue-800 pl-6">Thống kê</a>
+                @guest
+                    <a href="{{ route('login') }}" class="block mt-4 text-center bg-blue-900 text-white p-3 rounded-xl font-bold">Đăng nhập</a>
+                @endguest
             </div>
         </div>
-    @endif
+    </header>
 
     <main class="flex-grow">
         @yield('content')
     </main>
 
-    <footer class="bg-white border-t border-blue-100 pt-16 pb-8 text-sm mt-auto">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
-                <div class="col-span-1">
-                    <div class="flex items-center gap-2 mb-4 text-blue-900 font-bold uppercase tracking-widest">
-                        <i class="fa-solid fa-anchor"></i> Thư viện VODIC
-                    </div>
-                    <p class="text-slate-500 leading-relaxed mb-4 text-xs text-justify">
-                        Trung tâm Thông tin, dữ liệu biển và hải đảo quốc gia. Đơn vị sự nghiệp công lập trực thuộc Cục Biển và Hải đảo Việt Nam.
-                    </p>
-                    <div class="flex space-x-3">
-                        <a href="#" class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fa-brands fa-facebook-f"></i></a>
-                        <a href="#" class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i class="fa-solid fa-globe"></i></a>
+    <footer class="bg-white border-t border-blue-100 pt-20 pb-10 mt-auto">
+        <div class="container mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-3 mb-6 text-blue-900 font-extrabold tracking-widest text-lg">
+                       Trang thông tin Thư viện - Trung tâm Thông tin, dữ liệu biển và hải đảo quốc gia
                     </div>
                 </div>
                 
                 <div>
-                    <h3 class="font-bold text-blue-900 mb-4 uppercase text-xs tracking-wider">Về chúng tôi</h3>
-                    <ul class="space-y-3 text-slate-500">
-                        <li><a href="{{ route('client.help.about') }}" class="hover:text-cyan-600 transition-colors">Giới thiệu chung</a></li>
-                        <li><a href="{{ route('client.help.org') }}" class="hover:text-cyan-600 transition-colors">Cơ cấu tổ chức</a></li>
+                    <h3 class="font-bold text-blue-900 mb-6 uppercase text-xs tracking-widest opacity-60">Về chúng tôi</h3>
+                    <ul class="space-y-4 text-slate-600 text-sm font-medium italic">
+                        <li><a href="{{ route('client.help.about') }}" class="hover:text-blue-600">Giới thiệu chung</a></li>
+                        <li><a href="{{ route('client.help.org') }}" class="hover:text-blue-600">Cơ cấu tổ chức</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="font-bold text-blue-900 mb-4 uppercase text-xs tracking-wider">Hỗ trợ</h3>
-                    <ul class="space-y-3 text-slate-500">
-                        <li><a href="{{ route('client.help.guide') }}" class="hover:text-cyan-600 transition-colors">Hướng dẫn tra cứu</a></li>
-                        <li><a href="{{ route('client.request.create') }}" class="hover:text-cyan-600 transition-colors">Gửi yêu cầu dữ liệu</a></li>
+                    <h3 class="font-bold text-blue-900 mb-6 uppercase text-xs tracking-widest opacity-60">Hỗ trợ khách hàng</h3>
+                    <ul class="space-y-4 text-slate-600 text-sm font-medium italic">
+                        <li><a href="{{ route('client.help.guide') }}" class="hover:text-blue-600">Hướng dẫn tra cứu</a></li>
+                        <li><a href="{{ route('client.request.create') }}" class="hover:text-blue-600">Đề nghị cung cấp dữ liệu</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="font-bold text-blue-900 mb-4 uppercase text-xs tracking-wider">Liên hệ</h3>
-                    <ul class="space-y-3 text-slate-500 text-xs">
-                        <li class="flex gap-3"><i class="fa-solid fa-envelope mt-0.5 text-blue-700"></i> Đơn vị quản lý: Phòng Quản lý dữ liệu và thư viện</li>
-                        <li class="flex gap-3"><i class="fa-solid fa-location-dot mt-0.5 text-blue-700"></i> 83 Nguyễn Chí Thanh, Đống Đa, Hà Nội.</li>
-                        <li class="flex gap-3"><i class="fa-solid fa-phone mt-0.5 text-blue-700"></i> 84-24-376 18159</li>
-                        <li class="flex gap-3"><i class="fa-solid fa-envelope mt-0.5 text-blue-700"></i> hoanglong@vodic.vn</li>
+                    <h3 class="font-bold text-blue-900 mb-6 uppercase text-xs tracking-widest opacity-60">Liên hệ</h3>
+                    <ul class="space-y-4 text-slate-500 text-xs font-bold italic">
+                        <li class="flex gap-3"><i class="fa-solid fa-location-dot text-blue-600"></i>Đơn vị quản lý: Phòng Quản lý dữ liệu và thư viện</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-location-dot text-blue-600"></i>Địa chỉ: 83 Nguyễn Chí Thanh, Láng Hạ, Đống Đa, Hà Nội.</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-phone text-blue-600"></i>SĐT: (84-24) 376 18159</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-envelope text-blue-600"></i>Email: hoanglong@vodic.vn</li>
                     </ul>
                 </div>
-            </div>
-
-            <div class="border-t border-blue-100 pt-8 text-center text-slate-400 text-xs">
-                &copy; 2024 VODIC - Hệ thống quản lý dữ liệu tài nguyên biển quốc gia.
             </div>
         </div>
     </footer>
 
     <script>
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu-container');
+            if (btn && menu) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.toggle('hidden');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -29,13 +29,15 @@ class DatabaseSeeder extends Seeder
         // 4. Tạo Nhóm dự án mẫu
         ProjectGroup::create(['name' => 'Đề án 47']);
 
-        // 5. Tạo Nhóm phí mẫu
-        FeeCategory::create(['name' => 'Dữ liệu Tài nguyên đất', 'order' => 1]);
         // 6. Tạo Đơn vị thực hiện mẫu
         Field::create(['name' => 'Địa chất - Khoáng sản', 'color' => '#ef4444']);
         Field::create(['name' => 'Sinh học - Nguồn lợi', 'color' => '#10b981']);
         Field::create(['name' => 'Môi trường biển', 'color' => '#06b6d4']);
         Field::create(['name' => 'Khí tượng - Hải văn', 'color' => '#8b5cf6']);
         Field::create(['name' => 'Vật lý biển', 'color' => '#f59e0b']);
+
+        $this->call([
+            FeeDataSeeder::class,
+        ]);
     }
 }

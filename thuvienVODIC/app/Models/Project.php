@@ -7,6 +7,7 @@ use App\Models\Ministry;
 use App\Models\ImplementingUnit;
 use App\Models\ProjectGroup;
 use App\Models\User;
+use App\Models\Field;
 use App\Models\Document;
 
 class Project extends Model
@@ -34,6 +35,10 @@ class Project extends Model
         'status'
     ];
 
+    public function field()
+    {
+        return $this->belongsTo(Field::class, 'field_id');
+    }
     // Quan hệ: Dự án con (Dự án thành phần)
     public function children()
     {

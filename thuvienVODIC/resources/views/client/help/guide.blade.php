@@ -103,11 +103,11 @@
                     <ul class="space-y-3 relative z-10 text-sm">
                         <li class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-phone"></i></div>
-                            <span class="font-bold">(024) 3773 xxxx</span>
+                            <span class="font-bold">(84-24) 376 18159</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-yellow-400"><i class="fa-solid fa-envelope"></i></div>
-                            <span>webmaster@vodic.vn</span>
+                            <span>hoanglong@vodic.vn</span>
                         </li>
                     </ul>
                 </div>
